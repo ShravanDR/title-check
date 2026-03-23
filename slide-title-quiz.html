@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Title Check</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===========================
+       RESET & BASE
+    =========================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #fcf7ea;
+      color: #30473f;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:focus-visible {
+      outline: 2px solid #30473f;
+      outline-offset: 3px;
+    }
+
+    /* ===========================
+       UTILITY
+    =========================== */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ===========================
+       APP LAYOUT
+    =========================== */
+    #app {
+      width: 100%;
+      max-width: 640px;
+      padding: 0 24px;
+    }
+
+    /* ===========================
+       SCREEN MANAGEMENT
+    =========================== */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      min-height: 100vh;
+      padding: 64px 0 48px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .screen.active.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===========================
+       LANDING SCREEN
+    =========================== */
+    #landing {
+      justify-content: center;
+      gap: 0;
+      text-align: center;
+    }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      background-color: #008440;
+      color: #fcf7ea;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+    }
+
+    #landing h1 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #30473f;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #555550;
+      max-width: 480px;
+      margin: 0 auto 40px;
+    }
+
+    .meta {
+      margin-top: 14px;
+      font-size: 0.8125rem;
+      color: #888882;
+    }
+
+    /* ===========================
+       PROGRESS BAR
+    =========================== */
+    .progress-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: #E8E8E4;
+      z-index: 100;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: #008440;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: #888882;
+      align-self: flex-start;
+      margin-bottom: 28px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ===========================
+       QUESTION SCREEN
+    =========================== */
+    #question {
+      padding-top: 40px;
+      gap: 0;
+    }
+
+    /* ===========================
+       QUESTION CARD
+    =========================== */
+    .question-card {
+      width: 100%;
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+      margin-bottom: 28px;
+      transition: background-color 0.2s ease, opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .sentence {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #30473f;
+      letter-spacing: 0;
+    }
+
+    /* Correct flash animation */
+    @keyframes correct-flash {
+      0%   { background-color: #FFFFFF; }
+      30%  { background-color: #d0edda; }
+      100% { background-color: #FFFFFF; }
+    }
+
+    /* Wrong flash animation */
+    @keyframes wrong-flash {
+      0%   { background-color: #FFFFFF; }
+      30%  { background-color: #F5D5D5; }
+      100% { background-color: #FFFFFF; }
+    }
+
+    .question-card.correct-flash {
+      animation: correct-flash 0.5s ease forwards;
+    }
+
+    .question-card.wrong-flash {
+      animation: wrong-flash 0.5s ease forwards;
+    }
+
+    .btn.correct-flash {
+      animation: correct-flash 0.5s ease forwards;
+    }
+
+    .btn.wrong-flash {
+      animation: wrong-flash 0.5s ease forwards;
+    }
+
+    /* ===========================
+       BUTTONS
+    =========================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Primary button */
+    .btn-primary {
+      background-color: #008440;
+      color: #fcf7ea;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: #144b3e;
+    }
+
+    /* Secondary button */
+    .btn-secondary {
+      background-color: transparent;
+      color: #30473f;
+      border: 1.5px solid #D0D0CC;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #F0F0EC;
+      border-color: #B0B0AA;
+    }
+
+    /* Good / Bad answer buttons */
+    .buttons {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .btn-good {
+      background-color: #f0f9f2;
+      color: #008440;
+      border: 1.5px solid #a8ddb5;
+    }
+
+    .btn-good:hover:not(:disabled) {
+      background-color: #e0f5e6;
+      border-color: #008440;
+    }
+
+    .btn-bad {
+      background-color: #FDF3F3;
+      color: #C44040;
+      border: 1.5px solid #F0C8C8;
+    }
+
+    .btn-bad:hover:not(:disabled) {
+      background-color: #FAEAEA;
+      border-color: #C44040;
+    }
+
+    .btn-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-wrap .btn {
+      width: 100%;
+    }
+
+    .key-hint {
+      font-size: 0.7em;
+      color: #b0a898;
+      letter-spacing: 0.02em;
+    }
+
+    .key-hint-inline {
+      font-size: 0.7em;
+      color: #b0a898;
+      margin-left: 8px;
+    }
+
+    /* Next button */
+    .btn-next {
+      background-color: #008440;
+      color: #fcf7ea;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .btn-next:hover:not(:disabled) {
+      background-color: #144b3e;
+    }
+
+    /* ===========================
+       FEEDBACK CARD
+    =========================== */
+    .feedback-card {
+      width: 100%;
+      background-color: #FDFCFB;
+      border-radius: 12px;
+      border-left: 4px solid #E8E8E4;
+      padding: 20px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+      /* Reveal transition */
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+
+    .feedback-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .feedback-card.feedback-correct {
+      border-left-color: #008440;
+      background-color: #F7FDFB;
+    }
+
+    .feedback-card.feedback-wrong {
+      border-left-color: #C44040;
+      background-color: #FDF9F9;
+    }
+
+    .feedback-rewrite.feedback-rewrite-bad {
+      background-color: #FDF3F3;
+    }
+
+    .feedback-rewrite.feedback-rewrite-bad .rewrite-label {
+      color: #C44040;
+    }
+
+    .feedback-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .feedback-icon {
+      font-size: 1.125rem;
+      line-height: 1;
+    }
+
+    .feedback-category {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #888882;
+    }
+
+    .feedback-explanation {
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: #30473f;
+      margin-bottom: 0;
+    }
+
+    .feedback-rewrite {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background-color: #F0F5F2;
+      border-radius: 8px;
+    }
+
+    .feedback-rewrite.hidden {
+      display: none !important;
+    }
+
+    .rewrite-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #008440;
+      margin-bottom: 6px;
+    }
+
+    .feedback-rewrite p {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      color: #30473f;
+      font-style: italic;
+    }
+
+    /* ===========================
+       RESULTS SCREEN
+    =========================== */
+    #results {
+      justify-content: flex-start;
+      gap: 0;
+      text-align: center;
+    }
+
+    #results h2 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 32px;
+      color: #30473f;
+    }
+
+    /* Score display */
+    .score-display {
+      width: 100%;
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .score-number {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 4.5rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: #30473f;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .score-fraction {
+      font-size: 0.9375rem;
+      color: #888882;
+    }
+
+    /* Category breakdown */
+    .category-breakdown {
+      width: 100%;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .category-breakdown-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #888882;
+      margin-bottom: 12px;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .category-item {
+      background: #FFFFFF;
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .category-name {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #30473f;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .category-score {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #30473f;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .category-bar-track {
+      height: 4px;
+      background-color: #E8E8E4;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .category-bar-fill {
+      height: 100%;
+      background-color: #30473f;
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+
+    .category-bar-fill.perfect {
+      background-color: #008440;
+    }
+
+    .category-bar-fill.struggling {
+      background-color: #C44040;
+    }
+
+    /* Wrong answer review */
+    #show-wrong-btn {
+      margin-bottom: 16px;
+    }
+
+    .wrong-answers {
+      width: 100%;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .wrong-answer-card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      margin-bottom: 10px;
+      border-left: 4px solid #C44040;
+    }
+
+    .wrong-answer-sentence {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #30473f;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .wrong-answer-meta {
+      font-size: 0.8125rem;
+      color: #888882;
+      margin-bottom: 8px;
+    }
+
+    .wrong-answer-explanation {
+      font-size: 0.875rem;
+      color: #555550;
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .wrong-answer-rewrite {
+      font-size: 0.875rem;
+      color: #008440;
+      font-style: italic;
+      line-height: 1.5;
+      padding: 10px 14px;
+      background-color: #F0F5F2;
+      border-radius: 8px;
+    }
+
+    #replay-btn {
+      margin-top: 8px;
+    }
+
+    .results-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .results-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .results-right {
+      width: 100%;
+    }
+
+    .checklist-section {
+      padding-top: 24px;
+      border-top: 1px solid #E0E0E0;
+      text-align: left;
+    }
+
+    .checklist-title {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: #30473f;
+      margin: 0 0 6px 0;
+    }
+
+    .checklist-intro {
+      font-size: 0.875rem;
+      color: #777;
+      margin: 0 0 20px 0;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .checklist li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: #333;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .checklist li:last-child {
+      border-bottom: none;
+    }
+
+    .checklist li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid #CCC;
+      border-radius: 3px;
+    }
+
+    .checklist li strong {
+      color: #30473f;
+    }
+
+    /* ===========================
+       RESPONSIVE — TABLET
+    =========================== */
+    @media (min-width: 600px) {
+      .screen {
+        padding-top: 80px;
+        padding-bottom: 64px;
+      }
+
+      #landing h1 {
+        font-size: 2.75rem;
+      }
+
+      .subtitle {
+        font-size: 1.0625rem;
+      }
+
+      .sentence {
+        font-size: 2.125rem;
+      }
+
+      .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        max-width: 280px;
+      }
+    }
+
+    /* ===========================
+       RESPONSIVE — WIDE DESKTOP (side-by-side results)
+    =========================== */
+    @media (min-width: 960px) {
+      #app:has(#results.active) {
+        max-width: 960px;
+      }
+
+      .results-layout {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 48px;
+      }
+
+      .results-left {
+        flex: 1;
+        min-width: 0;
+        position: sticky;
+        top: 40px;
+      }
+
+      .results-right {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .checklist-section {
+        border-top: none;
+        padding-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <section id="landing" class="screen active visible">
+      <div class="logo">DR</div>
+      <h1>Title Check</h1>
+      <p class="subtitle">Can you tell a good slide title from a bad one? 15 questions. Drawn from our writing standards. See how sharp your instincts are.</p>
+      <button id="start-btn" class="btn btn-primary">Start Quiz</button>
+      <p class="meta">15 questions per round</p>
+    </section>
+
+    <section id="question" class="screen">
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <p id="progress-text" class="progress-text">1 / 20</p>
+      <div class="question-card">
+        <p id="sentence" class="sentence"></p>
+      </div>
+      <div class="buttons">
+        <div class="btn-wrap">
+          <button id="bad-btn" class="btn btn-bad">Bad Title</button>
+          <span class="key-hint">&larr; left arrow</span>
+        </div>
+        <div class="btn-wrap">
+          <button id="good-btn" class="btn btn-good">Good Title</button>
+          <span class="key-hint">right arrow &rarr;</span>
+        </div>
+      </div>
+      <div id="feedback-card" class="feedback-card">
+        <div class="feedback-header">
+          <span id="feedback-icon" class="feedback-icon"></span>
+          <span id="feedback-category" class="feedback-category"></span>
+        </div>
+        <p id="feedback-explanation" class="feedback-explanation"></p>
+        <div id="feedback-rewrite" class="feedback-rewrite">
+          <span class="rewrite-label">Better version:</span>
+          <p id="rewrite-text"></p>
+        </div>
+        <button id="next-btn" class="btn btn-next">Next <span class="key-hint-inline">enter &crarr;</span></button>
+      </div>
+    </section>
+
+    <section id="results" class="screen">
+      <h2>Results</h2>
+      <div class="results-layout">
+        <div class="results-left">
+          <div id="score-display" class="score-display"></div>
+          <button id="show-wrong-btn" class="btn btn-secondary">Review Wrong Answers</button>
+          <div id="wrong-answers" class="wrong-answers hidden"></div>
+          <button id="replay-btn" class="btn btn-primary">Play Again with New Questions</button>
+          <p class="meta">Each round draws 15 fresh questions from a pool of 98, so every replay is different.</p>
+        </div>
+        <div class="results-right">
+          <div class="checklist-section">
+            <h3 class="checklist-title">Slide Title Checklist</h3>
+            <p class="checklist-intro">Run every title through these before locking it in.</p>
+            <ul class="checklist">
+              <li><strong>Message, not label.</strong> Does it state a conclusion an investor could agree or disagree with? If someone can respond "so what?", rewrite it.</li>
+              <li><strong>Works standalone.</strong> If someone reads only the titles in sequence, does the story track without the presenter?</li>
+              <li><strong>Leads with the point.</strong> No setup, no announcement. Say it.</li>
+              <li><strong>Specific over vague.</strong> A name, a number, a company does more work than a category label. "Strong growth" is not a claim. "2.5x users in 5 months" is.</li>
+              <li><strong>Anchored to a norm.</strong> A number in isolation carries no weight. State the finding and the reference point it deviates from.</li>
+              <li><strong>Answers "so what?"</strong> If the implication for the business is not self-evident, add it. Tell the reader what to do with the information.</li>
+              <li><strong>One point per title.</strong> If it's doing two things, the slide isn't ready.</li>
+              <li><strong>No false drama.</strong> Cut "here's the thing," "here's the kicker," and any engagement bait. If the point is worth making, make it.</li>
+              <li><strong>No banned patterns.</strong> No "not X, it's Y" framing. No participial add-ons. No stacked rule-of-three.</li>
+              <li><strong>Clean language.</strong> No delve, synergy, paradigm, tapestry. No filler transitions. No em dashes. No intensifiers that add nothing.</li>
+              <li><strong>Length earns its place.</strong> A two-line title that conveys a full finding beats a four-word title that conveys nothing. But padding with qualifiers is not the same as adding information.</li>
+              <li><strong>Social proof names names.</strong> "Marquee investors" is empty. "Sequoia, Tiger Global, and DST at $120M" is proof.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      // ===========================
+      // MESSAGE-VS-LABEL (6)
+      // ===========================
+      {
+        sentence: "Revenue Analysis",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "This is a topic label, not a message. It tells the audience what the slide is about but not what they should take away from it.",
+        rewrite: "Enterprise revenue has doubled YoY, driven by mid-market expansion"
+      },
+      {
+        sentence: "Market Opportunity",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "A two-word label forces the audience to read the whole slide to extract the point. The title should deliver the headline so the slide body provides evidence.",
+        rewrite: "The US logistics market is $200B and still runs on spreadsheets"
+      },
+      {
+        sentence: "Our Team",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "Every deck has a team slide; the label adds zero information. The title should convey why this team is uniquely qualified.",
+        rewrite: "The founding team has built and sold two companies in this space"
+      },
+      {
+        sentence: "Product Overview",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "This is a section header, not a slide title. It doesn't tell the audience the one thing they should remember about the product.",
+        rewrite: "One integration replaces five tools in the compliance workflow"
+      },
+      {
+        sentence: "Enterprise CAC has halved in six months as the sales motion matures",
+        isGoodTitle: true,
+        category: "message-vs-label",
+        explanation: "This is a complete message with a specific claim and a causal explanation. The audience knows exactly what happened and why.",
+        rewrite: null,
+        badVersion: "Customer Acquisition Cost Trends"
+      },
+      {
+        sentence: "Three of the top five insurers renewed at 2x their initial contract",
+        isGoodTitle: true,
+        category: "message-vs-label",
+        explanation: "Delivers a concrete, memorable takeaway. The audience immediately understands the expansion story without reading the slide body.",
+        rewrite: null,
+        badVersion: "Customer Retention Summary"
+      },
+
+      // ===========================
+      // UNANCHORED-NUMBER (5)
+      // ===========================
+      {
+        sentence: "15% YoY revenue growth",
+        isGoodTitle: false,
+        category: "unanchored-number",
+        explanation: "15% could be great or mediocre depending on the category. Without a benchmark, the audience has no way to judge whether this number is impressive.",
+        rewrite: "Revenue grew 15% YoY, 3x the category average"
+      },
+      {
+        sentence: "We've onboarded 200 enterprise customers",
+        isGoodTitle: false,
+        category: "unanchored-number",
+        explanation: "200 customers in ten years is unremarkable; 200 in ten months is extraordinary. The number needs a timeframe or comparison to land.",
+        rewrite: "200 enterprise customers in 18 months, the fastest ramp in the category"
+      },
+      {
+        sentence: "$4.2M ARR",
+        isGoodTitle: false,
+        category: "unanchored-number",
+        explanation: "A raw ARR figure without context (time to reach it, growth rate, or efficiency) leaves the audience to guess whether it is good or bad.",
+        rewrite: "$4.2M ARR in 14 months with zero outbound spend"
+      },
+      {
+        sentence: "NRR at 135% puts us in the top decile of vertical SaaS",
+        isGoodTitle: true,
+        category: "unanchored-number",
+        explanation: "The benchmark (top decile of vertical SaaS) immediately tells the audience this is elite-level retention, anchoring the 135% figure.",
+        rewrite: null,
+        badVersion: "Net Revenue Retention"
+      },
+      {
+        sentence: "Gross margin at 82%, 15 points above the median for our stage",
+        isGoodTitle: true,
+        category: "unanchored-number",
+        explanation: "The comparison to stage median gives the audience a clear frame for evaluating 82%, making the number self-explanatory.",
+        rewrite: null,
+        badVersion: "Gross Margin Analysis"
+      },
+
+      // ===========================
+      // MISSING-SO-WHAT (5)
+      // ===========================
+      {
+        sentence: "Revenue in Region A grew 15% YoY, 3x the category rate",
+        isGoodTitle: false,
+        category: "missing-so-what",
+        explanation: "The data point is anchored, but it stops short of saying why it matters. What decision or action does this growth justify?",
+        rewrite: "Revenue in Region A grew 15% YoY, 3x the category rate, opening the case for accelerating sales headcount there"
+      },
+      {
+        sentence: "Customer support tickets dropped 40% after the v3 release",
+        isGoodTitle: false,
+        category: "missing-so-what",
+        explanation: "A 40% drop is impressive, but the title doesn't explain the strategic implication. The audience is left wondering what that frees the team to do.",
+        rewrite: "Support tickets dropped 40% post-v3, freeing the team to shift from reactive support to proactive onboarding"
+      },
+      {
+        sentence: "Average deal size increased from $30K to $85K",
+        isGoodTitle: false,
+        category: "missing-so-what",
+        explanation: "The what is clear but the why and so-what are missing. A good title would connect the deal size increase to the underlying product expansion.",
+        rewrite: "Deal size nearly tripled to $85K as the platform expanded from single-team to company-wide deployments"
+      },
+      {
+        sentence: "Churn halved after usage-based pricing, validating the pivot from seat-based licensing",
+        isGoodTitle: true,
+        category: "missing-so-what",
+        explanation: "The data (churn halved) is directly connected to its strategic implication (validates the pricing pivot), giving the audience a complete story.",
+        rewrite: null,
+        badVersion: "Churn dropped 50% after pricing changes"
+      },
+      {
+        sentence: "Pipeline coverage at 4.2x gives confidence to raise hiring targets for Q3",
+        isGoodTitle: true,
+        category: "missing-so-what",
+        explanation: "The metric leads directly to the decision it enables. The audience understands both the data and what the company will do because of it.",
+        rewrite: null,
+        badVersion: "Pipeline Coverage Update"
+      },
+
+      // ===========================
+      // SCALE-TRANSLATION (5)
+      // ===========================
+      {
+        sentence: "Our TAM is $400 billion",
+        isGoodTitle: false,
+        category: "scale-translation",
+        explanation: "Very few people have an intuitive feel for what $400B means. The number is so large it becomes abstract without a real-world comparison.",
+        rewrite: "The TAM is $400B, roughly the size of the entire US restaurant industry"
+      },
+      {
+        sentence: "We process 2.3 petabytes of data monthly",
+        isGoodTitle: false,
+        category: "scale-translation",
+        explanation: "Almost no one can picture a petabyte. Technical scale needs a human-relatable analogy to make the audience feel the magnitude.",
+        rewrite: "We process enough data monthly to fill every book ever published, twice"
+      },
+      {
+        sentence: "The average enterprise wastes 12,000 person-hours per year on compliance",
+        isGoodTitle: false,
+        category: "scale-translation",
+        explanation: "12,000 person-hours is hard to picture. Translating to full-time employees makes the waste tangible and emotionally resonant.",
+        rewrite: "The average enterprise loses the equivalent of six full-time employees to manual compliance work"
+      },
+      {
+        sentence: "Each hospital in our pipeline spends $2.1M per year on the workflow we replace, roughly the salary of 15 nurses",
+        isGoodTitle: true,
+        category: "scale-translation",
+        explanation: "Translating $2.1M into 15 nurse salaries makes the cost visceral for a healthcare audience, turning an abstract budget line into human impact.",
+        rewrite: null,
+        badVersion: "$2.1M annual spend per hospital on target workflow"
+      },
+      {
+        sentence: "The backlog we eliminate is the equivalent of three full-time engineers per client doing nothing but data entry",
+        isGoodTitle: true,
+        category: "scale-translation",
+        explanation: "Expressing wasted effort as full-time engineers doing data entry makes the pain immediately relatable to any technical decision-maker.",
+        rewrite: null,
+        badVersion: "Significant backlog reduction per client"
+      },
+
+      // ===========================
+      // FALSE-DRAMA (5)
+      // ===========================
+      {
+        sentence: "Here's what most VCs miss about the logistics market",
+        isGoodTitle: false,
+        category: "false-drama",
+        explanation: "The teaser format implies the audience is uninformed rather than presenting a clear insight. It creates a promise the title itself never delivers.",
+        rewrite: "The logistics market has consolidated to three buyers, and none of them have modern tooling"
+      },
+      {
+        sentence: "Here's the thing about enterprise sales cycles",
+        isGoodTitle: false,
+        category: "false-drama",
+        explanation: "This is a verbal throat-clear that adds no information. It delays the actual point and reads as filler in a written title.",
+        rewrite: "Enterprise sales cycles shrank from 9 months to 11 weeks after the self-serve pilot launched"
+      },
+      {
+        sentence: "The real story behind our growth numbers",
+        isGoodTitle: false,
+        category: "false-drama",
+        explanation: "Promising a 'real story' implies the numbers were misleading, which undermines trust rather than building it.",
+        rewrite: "Growth accelerated because three channel partners started selling the product without being asked"
+      },
+      {
+        sentence: "Here's where it gets interesting",
+        isGoodTitle: false,
+        category: "false-drama",
+        explanation: "This tells the audience to be interested rather than giving them a reason to be. If the content is interesting, the title should prove it.",
+        rewrite: "The same platform handles both pre-trade compliance and post-trade settlement"
+      },
+      {
+        sentence: "The logistics market has consolidated to three buyers, and none of them have modern tooling",
+        isGoodTitle: true,
+        category: "false-drama",
+        explanation: "This delivers the actual insight directly. No teaser, no drama, just a specific, surprising market fact that earns the audience's attention.",
+        rewrite: null,
+        badVersion: "Here's what most people miss about the logistics market"
+      },
+
+      // ===========================
+      // WORD-CHOICE (6)
+      // ===========================
+      {
+        sentence: "Delving into our go-to-market synergies",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "'Delving' and 'synergies' are corporate filler words that obscure meaning. They signal a lack of concrete substance behind the title.",
+        rewrite: "The sales and marketing teams share a single pipeline that converts at 2x industry average"
+      },
+      {
+        sentence: "A fundamentally new paradigm for talent acquisition",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "'Paradigm' is one of the most overused buzzwords in business. If something is truly new, describe what changed in plain language.",
+        rewrite: "Hiring managers fill roles in 12 days instead of 45 by screening against work samples, not resumes"
+      },
+      {
+        sentence: "It's worth noting that our retention rates are remarkably strong",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "'It's worth noting' is a hedge, and 'remarkably strong' is a subjective claim. Replace both with the actual number and let the data speak.",
+        rewrite: "Logo retention is 97% at 12 months, with zero churn among customers above $50K ACV"
+      },
+      {
+        sentence: "Our platform serves as a tapestry connecting disparate data sources",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "'Tapestry' and 'disparate' are decorative words that make the sentence harder to parse. Clear writing uses the simplest word that conveys the meaning.",
+        rewrite: "The platform unifies EHR, claims, and lab data into a single patient timeline"
+      },
+      {
+        sentence: "Retention is 95% at 12 months across all cohorts",
+        isGoodTitle: true,
+        category: "word-choice",
+        explanation: "Plain, specific, and verifiable. Every word carries information and none are there for decoration.",
+        rewrite: null,
+        badVersion: "It's worth noting that our retention rates are remarkably strong"
+      },
+      {
+        sentence: "The API handles 12M calls per day with 99.97% uptime over the last 18 months",
+        isGoodTitle: true,
+        category: "word-choice",
+        explanation: "Concrete numbers replace any need for adjectives like 'robust' or 'reliable.' The data makes the quality self-evident.",
+        rewrite: null,
+        badVersion: "Our platform serves as a robust and reliable infrastructure"
+      },
+
+      // ===========================
+      // TONE (5)
+      // ===========================
+      {
+        sentence: "Let's unpack our competitive advantage",
+        isGoodTitle: false,
+        category: "tone",
+        explanation: "'Let's unpack' is conversational filler borrowed from podcasts. Written slide titles should state the point, not narrate the act of explaining it.",
+        rewrite: "The proprietary dataset covers 94% of US commercial properties, 3x the nearest competitor"
+      },
+      {
+        sentence: "Think of our platform as a GPS for compliance",
+        isGoodTitle: false,
+        category: "tone",
+        explanation: "Forced analogies ('GPS for X') oversimplify and come across as condescending. Say what the product actually does instead.",
+        rewrite: "The platform guides teams through every step of SOC 2 and ISO 27001 certification simultaneously"
+      },
+      {
+        sentence: "Let's break down how our flywheel works",
+        isGoodTitle: false,
+        category: "tone",
+        explanation: "'Let's break down' is a spoken transition, not a written headline. The title should deliver the flywheel's punchline, not announce that a breakdown is coming.",
+        rewrite: "Each new customer adds training data that improves accuracy, which attracts the next customer"
+      },
+      {
+        sentence: "Let's dive into what makes our unit economics work",
+        isGoodTitle: false,
+        category: "tone",
+        explanation: "'Let's dive into' is a verbal crutch that adds no information. The title should state the conclusion about unit economics directly.",
+        rewrite: "Unit economics turned positive in month four and have held for six consecutive quarters"
+      },
+      {
+        sentence: "Unit economics turned positive in month four and have held for six consecutive quarters",
+        isGoodTitle: true,
+        category: "tone",
+        explanation: "Direct, factual, and specific. No conversational warm-up, just the claim and the evidence, in professional written tone.",
+        rewrite: null,
+        badVersion: "Let's dive into what makes our unit economics work"
+      },
+
+      // ===========================
+      // CONTRAST-FRAMING (5)
+      // ===========================
+      {
+        sentence: "It's not software. It's infrastructure.",
+        isGoodTitle: false,
+        category: "contrast-framing",
+        explanation: "The dramatic 'not X, it's Y' structure sounds punchy but says nothing specific. What makes it infrastructure? The title should explain, not just assert.",
+        rewrite: "The platform becomes the system of record that downstream tools depend on, making it sticky from day one"
+      },
+      {
+        sentence: "The question isn't whether to automate. The question is how fast.",
+        isGoodTitle: false,
+        category: "contrast-framing",
+        explanation: "This rhetorical device is a cliche that delays the actual point. It sounds like a keynote soundbite, not a working slide title.",
+        rewrite: "Automation adoption is accelerating: 60% of our pipeline is now inbound from teams that already automated a first workflow"
+      },
+      {
+        sentence: "Not a tool, but a platform",
+        isGoodTitle: false,
+        category: "contrast-framing",
+        explanation: "This contrast is too vague to be useful. Every company claims to be a platform. The title should demonstrate platform-level value with a concrete example.",
+        rewrite: "Customers start with invoice processing and expand to full AP/AR within 90 days on average"
+      },
+      {
+        sentence: "We didn't build a product. We built a category.",
+        isGoodTitle: false,
+        category: "contrast-framing",
+        explanation: "Grandiose self-framing without evidence. Category creation is a claim the market makes about you, not something you assert about yourself.",
+        rewrite: "Gartner created a new Magic Quadrant category for our segment after three analysts cited our product as the reference architecture"
+      },
+      {
+        sentence: "The platform handles the full audit lifecycle, from evidence collection through remediation tracking",
+        isGoodTitle: true,
+        category: "contrast-framing",
+        explanation: "Instead of using a dramatic contrast, this title describes the actual scope of the platform with concrete endpoints, which is far more convincing.",
+        rewrite: null,
+        badVersion: "It's not a tool. It's a platform."
+      },
+
+      // ===========================
+      // SENTENCE-STRUCTURE (5)
+      // ===========================
+      {
+        sentence: "Transforming teams, building culture, driving results",
+        isGoodTitle: false,
+        category: "sentence-structure",
+        explanation: "Triple-gerund lists sound energetic but are structurally empty. None of the three phrases include a subject, object, or evidence.",
+        rewrite: "Engineering velocity increased 40% after the platform automated code review and deployment"
+      },
+      {
+        sentence: "Our engine identifies, qualifies, and converts leads at scale, highlighting the power of automation",
+        isGoodTitle: false,
+        category: "sentence-structure",
+        explanation: "The tacked-on participial phrase ('highlighting the power of automation') weakens the sentence. If automation matters, make it the main clause.",
+        rewrite: "The engine converts raw leads to qualified pipeline in under 48 hours with zero manual intervention"
+      },
+      {
+        sentence: "The first pillar is speed. The second is accuracy. The third is coverage.",
+        isGoodTitle: false,
+        category: "sentence-structure",
+        explanation: "Numbered pillar structures force the audience to hold three abstract concepts at once. A single concrete claim is more memorable than a list of three.",
+        rewrite: "The platform returns accurate results across 50 jurisdictions in under two seconds"
+      },
+      {
+        sentence: "Scaling globally, reducing costs, increasing throughput",
+        isGoodTitle: false,
+        category: "sentence-structure",
+        explanation: "Another gerund list with no specifics. Each item could apply to any company. Structure the title as a complete sentence with evidence.",
+        rewrite: "The platform processes cross-border payments in 14 currencies at 60% lower cost than SWIFT"
+      },
+      {
+        sentence: "The engine converts raw leads to qualified pipeline in under 48 hours",
+        isGoodTitle: true,
+        category: "sentence-structure",
+        explanation: "A complete sentence with a subject, verb, object, and timeframe. Every word earns its place and the structure is easy to parse at a glance.",
+        rewrite: null,
+        badVersion: "Transforming leads, building pipeline, driving results"
+      },
+
+      // ===========================
+      // SPECIFICITY (5)
+      // ===========================
+      {
+        sentence: "We're fundamentally changing how companies hire",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Fundamentally changing' is a grand claim with no proof. Without naming what changed, for whom, or by how much, the audience has no reason to believe it.",
+        rewrite: "Hiring managers at mid-market firms fill roles in 12 days instead of 45 using work-sample screening"
+      },
+      {
+        sentence: "Our deeply integrated platform drives remarkable outcomes",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Deeply integrated,' 'drives,' and 'remarkable outcomes' are all subjective. Replace each with a measurable fact.",
+        rewrite: "The platform connects to Salesforce, HubSpot, and Marketo in one click and increases pipeline conversion by 35%"
+      },
+      {
+        sentence: "A new approach to an old problem",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "This could describe literally any startup. It has no information about the approach, the problem, or why this combination is different.",
+        rewrite: "ML-based anomaly detection catches billing errors that rule-based systems miss, recovering $1.2M per client annually"
+      },
+      {
+        sentence: "We are arguably the most innovative company in the space",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Arguably' signals the claim is debatable, and 'most innovative' is subjective. The word 'arguably' undermines the very claim it tries to make.",
+        rewrite: "We hold 14 patents in real-time pricing and were first to market with dynamic shelf optimization"
+      },
+      {
+        sentence: "Medtronic, Stryker, and J&J use the platform across 140 facilities",
+        isGoodTitle: true,
+        category: "specificity",
+        explanation: "Named customers plus a concrete facility count make the adoption claim instantly verifiable and credible.",
+        rewrite: null,
+        badVersion: "We're fundamentally changing how enterprises operate"
+      },
+
+      // ===========================
+      // HIERARCHY (4)
+      // ===========================
+      {
+        sentence: "AI-powered matching, 3x faster pipeline, 90% retention, and a $50B market",
+        isGoodTitle: false,
+        category: "hierarchy",
+        explanation: "Four unrelated claims compete for attention and none of them win. A title should make one point; the slide body can provide supporting evidence.",
+        rewrite: "90% retention at 12 months proves product-market fit in a $50B category"
+      },
+      {
+        sentence: "Best-in-class NPS, growing 20% MoM, with enterprise contracts and a capital-efficient model",
+        isGoodTitle: false,
+        category: "hierarchy",
+        explanation: "Cramming four metrics into one title dilutes all of them. Pick the single most compelling proof point and lead with it.",
+        rewrite: "NPS of 78 is best-in-class for enterprise SaaS and drives 40% of new logos through referrals"
+      },
+      {
+        sentence: "Strong retention, fast growth, proven team, and massive market",
+        isGoodTitle: false,
+        category: "hierarchy",
+        explanation: "Four vague superlatives with no data. This reads like a bullet list from a pitch template, not a persuasive headline.",
+        rewrite: "Net retention at 140% means the installed base grows without new sales"
+      },
+      {
+        sentence: "Net retention at 140% means the installed base grows without new sales",
+        isGoodTitle: true,
+        category: "hierarchy",
+        explanation: "One metric, one implication. The title has a clear hierarchy: the data point leads, and its business meaning follows.",
+        rewrite: null,
+        badVersion: "Strong retention, fast growth, proven team, and massive market"
+      },
+      {
+        sentence: "The 4-month payback period funds all subsequent growth from operating cash flow",
+        isGoodTitle: true,
+        category: "hierarchy",
+        explanation: "Leads with the single most important metric and follows with its strategic consequence. One idea, fully developed.",
+        rewrite: null,
+        badVersion: "Impressive unit economics and capital efficiency"
+      },
+
+      // ===========================
+      // METRICS-IN-HEADLINE (5)
+      // ===========================
+      {
+        sentence: "Strong growth trajectory",
+        isGoodTitle: false,
+        category: "metrics-in-headline",
+        explanation: "'Strong' and 'trajectory' are subjective fillers. If growth is strong, show the number. Vague praise in a title wastes the most valuable real estate on the slide.",
+        rewrite: "2.5x jump in users in the last 5 months"
+      },
+      {
+        sentence: "Impressive unit economics",
+        isGoodTitle: false,
+        category: "metrics-in-headline",
+        explanation: "'Impressive' is the author's opinion, not a fact. The audience should decide what is impressive based on the actual numbers.",
+        rewrite: "CAC payback in 4 months, LTV:CAC of 8:1"
+      },
+      {
+        sentence: "Significant revenue milestones",
+        isGoodTitle: false,
+        category: "metrics-in-headline",
+        explanation: "'Significant' is doing all the work while saying nothing. Replacing it with the actual milestone makes the title self-evident.",
+        rewrite: "$4.2M ARR reached in 14 months"
+      },
+      {
+        sentence: "Page Industries scales 6x order volumes in 3 years with Vinculum",
+        isGoodTitle: true,
+        category: "metrics-in-headline",
+        explanation: "A named customer, a concrete multiplier, and a timeframe. The title proves the claim with data instead of adjectives.",
+        rewrite: null,
+        badVersion: "Significant customer growth trajectory"
+      },
+      {
+        sentence: "Working capital requirement to reach $500M run rate by Dec '25",
+        isGoodTitle: true,
+        category: "metrics-in-headline",
+        explanation: "Specific dollar target and deadline make the ask concrete. The audience knows exactly what is being discussed and by when.",
+        rewrite: null,
+        badVersion: "Capital Requirements"
+      },
+
+      {
+        sentence: "Company Overview",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "A dead-end label that could appear anywhere in the deck. It tells the audience what the slide is about but not what they should take away.",
+        rewrite: "Founded in 2019 to solve the compliance gap that the founders experienced at their previous company"
+      },
+      {
+        sentence: "Competitive Landscape",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "A topic label that doesn't tell the audience what the competitive landscape means for this company's positioning.",
+        rewrite: "Legacy incumbents are slow to adapt, creating a window for a modern, API-first alternative"
+      },
+
+      // ===========================
+      // SOCIAL-PROOF (5)
+      // ===========================
+      {
+        sentence: "Backed by marquee investors",
+        isGoodTitle: false,
+        category: "social-proof",
+        explanation: "'Marquee' is subjective and the audience doesn't know which investors are being referenced. Name them or the proof is empty.",
+        rewrite: "Backed by Sequoia, Tiger Global, and DST at a combined $120M"
+      },
+      {
+        sentence: "Industry leader with global recognitions",
+        isGoodTitle: false,
+        category: "social-proof",
+        explanation: "'Leader' and 'recognitions' are vague self-praise. Specify which recognition, from which authority, and how many times.",
+        rewrite: "Named to Gartner's Magic Quadrant for the third consecutive year"
+      },
+      {
+        sentence: "Strong investor interest",
+        isGoodTitle: false,
+        category: "social-proof",
+        explanation: "'Strong interest' is unmeasurable. Quantify the interest with subscription multiples or specific investor actions to make it credible.",
+        rewrite: "Oversubscribed 2.4x in Series B with all existing investors doubling down"
+      },
+      {
+        sentence: "Backed by India's #2 tech investment bank, Indigo Edge",
+        isGoodTitle: true,
+        category: "social-proof",
+        explanation: "Names the backer and ranks them, giving the audience a concrete reference point to evaluate the credibility of the endorsement.",
+        rewrite: null,
+        badVersion: "Backed by marquee investors"
+      },
+      {
+        sentence: "Medtronic, Stryker, and J&J deployed across 140 facilities in 18 months",
+        isGoodTitle: true,
+        category: "social-proof",
+        explanation: "Three named enterprises plus a facility count and timeframe. This is verifiable proof, not a subjective claim about adoption.",
+        rewrite: null,
+        badVersion: "Strong enterprise adoption"
+      },
+
+      // ===========================
+      // VISUAL-HIGHLIGHTING (5)
+      // ===========================
+      {
+        sentence: "Small M&A is fundamentally broken",
+        isGoodTitle: true,
+        category: "visual-highlighting",
+        html: "Small M&A is fundamentally <span style='color:#C44040;font-weight:700'>broken</span>",
+        explanation: "Red bold on 'broken' draws the eye directly to the core claim. The emphasis reinforces the problem statement that the deck will solve.",
+        rewrite: null,
+        badVersion: "Emphasizing 'Small' instead of 'broken' would highlight a modifier rather than the core claim"
+      },
+      {
+        sentence: "Chemicals are the largest and most globalised market",
+        isGoodTitle: true,
+        category: "visual-highlighting",
+        html: "Chemicals are the largest and most <span style='font-weight:700'>globalised</span> market",
+        explanation: "Bolding 'globalised' highlights the surprising qualifier that distinguishes this market from others the audience might assume are larger.",
+        rewrite: null,
+        badVersion: "Chemicals are the largest and most globalised market (no emphasis, nothing guides the reader's eye)"
+      },
+      {
+        sentence: "Small M&A is fundamentally broken",
+        isGoodTitle: false,
+        category: "visual-highlighting",
+        html: "<span style='font-weight:700'>Small</span> M&A is fundamentally broken",
+        explanation: "Emphasizing 'Small' is misleading because the insight is about M&A being broken, not about size. The emphasis should go on the core claim, not a modifier.",
+        rewrite: "Move the emphasis to 'broken' — the core claim, not the modifier.",
+        rewriteHtml: "Small M&A is fundamentally <span style='color:#C44040;font-weight:700'>broken</span>"
+      },
+      {
+        sentence: "Farmers without land titles have a short term outlook",
+        isGoodTitle: false,
+        category: "visual-highlighting",
+        html: "Farmers without land titles have a <span style='color:#C44040;font-weight:700'>short term</span> outlook",
+        explanation: "The real insight is 'without land titles' — that is the root cause. Emphasizing 'short term' highlights the symptom instead of the underlying problem.",
+        rewrite: "Move the emphasis to 'without land titles' — the root cause, not the symptom.",
+        rewriteHtml: "Farmers <span style='color:#C44040;font-weight:700'>without land titles</span> have a short term outlook"
+      },
+      {
+        sentence: "Consumer mobility needs extend far beyond UberX",
+        isGoodTitle: true,
+        category: "visual-highlighting",
+        html: "Consumer mobility needs extend far beyond <span style='font-weight:700'>UberX</span>",
+        explanation: "Bolding 'UberX' anchors the audience to a familiar reference point, making the broader claim about mobility needs instantly graspable.",
+        rewrite: null,
+        badVersion: "Consumer mobility needs extend far beyond UberX (no emphasis, the anchor gets lost)"
+      },
+
+      // ===========================
+      // NEW TITLES FROM REAL DECKS
+      // ===========================
+      {
+        sentence: "The best companies are already securing land rights",
+        isGoodTitle: true,
+        category: "specificity",
+        explanation: "Makes a specific, arguable claim about market behavior. An investor can agree or push back on whether the best companies are actually doing this.",
+        rewrite: null,
+        badVersion: "Land Rights Overview"
+      },
+      {
+        sentence: "We have the expertise for right cost structuring",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Expertise' and 'right cost structuring' are vague. What expertise? What does 'right' mean? This says nothing an investor can evaluate.",
+        rewrite: "Our team has structured 40+ supply chain deals, cutting landed cost by an average of 18%"
+      },
+      {
+        sentence: "Insecure land rights is a key contributor to these supply chain pressures",
+        isGoodTitle: true,
+        category: "missing-so-what",
+        explanation: "States a causal finding that connects land rights to supply chain pressure. Specific enough that an investor could verify or challenge it.",
+        rewrite: null,
+        badVersion: "Supply Chain Challenges"
+      },
+      {
+        sentence: "That is why we built MERIDIA",
+        isGoodTitle: false,
+        category: "false-drama",
+        explanation: "'That is why we built X' is a dramatic transition that says nothing about what the product does or why it matters. The title should state the value, not narrate the origin story.",
+        rewrite: "MERIDIA digitizes land rights in 48 hours, replacing a process that takes 18 months on paper"
+      },
+      {
+        sentence: "Faster/better efficacy via Pharma-fication of CPG",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "'Pharma-fication' is an invented concept label used as if it were established. The slash construction is unclear, and 'faster/better' is vague.",
+        rewrite: "Applying pharma-grade clinical testing to consumer products cuts reformulation cycles from 14 months to 3"
+      },
+      {
+        sentence: "Market is ripe for entry of modern superior products",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Ripe for entry' and 'modern superior' are performative confidence without specifics. Which market? Superior to what? By what measure?",
+        rewrite: "Indian men's grooming is a $1.2B market growing 15% YoY with no clinically tested brand in the top 10"
+      },
+      {
+        sentence: "Building a scientifically driven, high performance men's health company",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "This describes the company, not a finding. It's a mission statement disguised as a title. The audience learns what the company calls itself, not what it has achieved.",
+        rewrite: "Three clinically validated SKUs reached $4M ARR in 11 months with zero paid acquisition"
+      },
+      {
+        sentence: "Scale aggressively with focus on profitability",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "A generic strategic platitude. Every growth-stage company says this. No numbers, no timeline, no mechanism.",
+        rewrite: "Path to EBITDA breakeven by Q3 2026 while tripling distribution from 8K to 25K retail doors"
+      },
+      {
+        sentence: "India has emerged as the best supply chain alternative to China",
+        isGoodTitle: true,
+        category: "specificity",
+        explanation: "A specific geopolitical claim that an investor can evaluate. It names both countries and makes a clear comparative assertion.",
+        rewrite: null,
+        badVersion: "Supply Chain Diversification Trends"
+      },
+      {
+        sentence: "American businesses have been de-risking from China for years",
+        isGoodTitle: true,
+        category: "specificity",
+        explanation: "States a market trend with a clear actor (American businesses), a clear action (de-risking), and a timeframe implication. Specific enough to be verifiable.",
+        rewrite: null,
+        badVersion: "Global Supply Chain Shifts"
+      },
+      {
+        sentence: "TC 2.0 started with an operational transformation",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "'Operational transformation' is a label with no specifics. What transformed? What was the result? The title tells the audience nothing they can act on.",
+        rewrite: "TC 2.0 cut order fulfillment from 6 days to same-day by rebuilding the warehouse stack from scratch"
+      },
+      {
+        sentence: "All M&A stakeholders are losing out",
+        isGoodTitle: true,
+        category: "message-vs-label",
+        explanation: "A clear, arguable claim about a market failure. It names the affected group (all stakeholders) and makes a strong negative assertion that the rest of the deck must prove.",
+        rewrite: null,
+        badVersion: "M&A Market Challenges"
+      },
+      {
+        sentence: "One AI platform driving value for all M&A stakeholders",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "'Driving value' is meaningless filler. 'One AI platform' tells the audience nothing about what it does or how. This is a tagline, not a title.",
+        rewrite: "A single platform handles deal sourcing, due diligence, and integration tracking, cutting M&A cycle time by 40%"
+      },
+      {
+        sentence: "Making customers happy across the globe",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "Empty claim with no measurable outcome. How many customers? Which geographies? What does 'happy' mean in business terms? This is a greeting card, not a slide title.",
+        rewrite: "NPS of 72 across 14 countries with 94% annual renewal rate"
+      },
+      {
+        sentence: "Substantial addressable market outpacing GDP growth",
+        isGoodTitle: false,
+        category: "unanchored-number",
+        explanation: "'Substantial' is unmeasurable. 'Outpacing GDP growth' gives a reference point but no actual number. How large is the market? By how much does it outpace GDP?",
+        rewrite: "$48B addressable market growing at 12% YoY, 3x the rate of GDP in target geographies"
+      },
+      {
+        sentence: "The World Changed Overnight. Digitisation Inflated Expectations.",
+        isGoodTitle: false,
+        category: "false-drama",
+        explanation: "Two sentences of grandiose stakes inflation with no specifics. Which world? What changed? Whose expectations? This is false drama masquerading as insight.",
+        rewrite: "Post-COVID digital adoption jumped 5 years in 12 months, but most enterprise tools haven't kept pace"
+      },
+      {
+        sentence: "Experienced Management is Critical in Times of Volatility",
+        isGoodTitle: false,
+        category: "tone",
+        explanation: "A generic truism that applies to every company in every market. It doesn't say anything specific about this team, this volatility, or this opportunity.",
+        rewrite: "The founding team navigated the 2020 supply crunch without losing a single enterprise contract"
+      },
+      {
+        sentence: "Massive market opportunity is available",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Massive' is subjective and 'is available' adds nothing. This is the emptiest possible version of a market slide title. No number, no segment, no growth rate.",
+        rewrite: "$18B US market with 70% still served by manual processes and no dominant software player"
+      },
+      {
+        sentence: "Evolved cutting-edge technology has the ability to make a big difference",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "Word salad. 'Evolved', 'cutting-edge', 'ability to make a big difference' are three consecutive vague intensifiers stacked on top of each other. Not a single specific claim.",
+        rewrite: "Our NLP engine processes contracts in 90 seconds with 97.3% accuracy, replacing 4 hours of manual review"
+      },
+      {
+        sentence: "Vector completely automates BFSI workflows using cutting-edge AI/NLP technology",
+        isGoodTitle: false,
+        category: "word-choice",
+        explanation: "'Cutting-edge AI/NLP' is buzzword padding. 'Completely automates' is an unsubstantiated absolute. Name the specific workflow and the measurable outcome.",
+        rewrite: "Vector automates KYC document verification for banks, reducing processing time from 3 days to 11 minutes"
+      },
+      {
+        sentence: "A three-pronged growth strategy",
+        isGoodTitle: false,
+        category: "message-vs-label",
+        explanation: "A label that tells the audience how many prongs the strategy has, not what the strategy achieves. The number of prongs is not a finding.",
+        rewrite: "Three channels, each independently validated at $2M+ ARR, combine to reach $30M by 2027"
+      },
+      {
+        sentence: "Social Commerce is consuming Fashion eCommerce globally",
+        isGoodTitle: false,
+        category: "unanchored-number",
+        explanation: "'Consuming' is dramatic but unquantified. How fast? What share has shifted? Without a number or anchor, this is an assertion with no weight.",
+        rewrite: "Social commerce now accounts for 38% of fashion eCommerce in Southeast Asia, up from 12% in 2021"
+      },
+      {
+        sentence: "Uber has pioneered dozens of safety technologies, many of which are now industry standard",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Dozens' is vague and 'many of which' hedges further. Name the technologies and the adoption. Vague quantity words undercut what should be a strong proof point.",
+        rewrite: "Uber built RideCheck, PIN verification, and real-time ID check, all three now adopted by Lyft and Bolt"
+      },
+      {
+        sentence: "But securing land rights comes with its own hurdles",
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'Its own hurdles' is vague. What hurdles? How many? How severe? The title gestures at a problem without naming it, leaving the audience to guess.",
+        rewrite: "Securing land rights requires physical surveys, government approvals, and community consent, a process averaging 18 months per parcel"
+      }
+    ];
+
+
+    // ===========================
+    //  QUIZ ENGINE
+    // ===========================
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function selectRound(pool, count) {
+      const byCategory = {};
+      for (const q of pool) {
+        if (!byCategory[q.category]) byCategory[q.category] = [];
+        byCategory[q.category].push(q);
+      }
+      for (const cat in byCategory) {
+        byCategory[cat] = shuffle(byCategory[cat]);
+      }
+      // Pick 1 from up to `count` random categories for variety
+      const cats = shuffle(Object.keys(byCategory));
+      const selected = [];
+      const used = new Set();
+      for (let i = 0; i < Math.min(count, cats.length); i++) {
+        const q = byCategory[cats[i]][0];
+        selected.push(q);
+        used.add(q);
+      }
+      // Fill remaining slots from shuffled pool, max 2 per category
+      const remaining = shuffle(pool.filter(q => !used.has(q)));
+      const catCounts = {};
+      for (const q of selected) {
+        catCounts[q.category] = (catCounts[q.category] || 0) + 1;
+      }
+      for (const q of remaining) {
+        if (selected.length >= count) break;
+        if ((catCounts[q.category] || 0) >= 2) continue;
+        selected.push(q);
+        catCounts[q.category] = (catCounts[q.category] || 0) + 1;
+      }
+      return shuffle(selected);
+    }
+
+    const CATEGORY_NAMES = {
+      'message-vs-label': 'Message vs Label',
+      'unanchored-number': 'Unanchored Number',
+      'missing-so-what': 'Missing So-What',
+      'scale-translation': 'Scale Translation',
+      'false-drama': 'False Drama',
+      'word-choice': 'Word Choice',
+      'tone': 'Tone',
+      'contrast-framing': 'Contrast & Framing',
+      'sentence-structure': 'Sentence Structure',
+      'specificity': 'Specificity',
+      'hierarchy': 'Hierarchy',
+      'metrics-in-headline': 'Metrics in Headline',
+      'social-proof': 'Social Proof',
+      'visual-highlighting': 'Visual Highlighting'
+    };
+
+    // ===========================
+    //  STATE MANAGEMENT
+    // ===========================
+
+    const ROUND_SIZE = 15;
+    let currentRound = [];
+    let currentIndex = 0;
+    let answers = [];
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => {
+        s.classList.remove('active', 'visible');
+      });
+      const target = document.getElementById(id);
+      target.classList.add('active');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          target.classList.add('visible');
+        });
+      });
+    }
+
+    function startQuiz() {
+      currentRound = selectRound(QUESTIONS, ROUND_SIZE);
+      currentIndex = 0;
+      answers = [];
+      showScreen('question');
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = currentRound[currentIndex];
+      const card = document.querySelector('.question-card');
+      const sentenceEl = document.getElementById('sentence');
+
+      // Fade out, swap content, fade in
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(8px)';
+
+      setTimeout(() => {
+        if (q.html) {
+          sentenceEl.innerHTML = q.html;
+        } else {
+          sentenceEl.textContent = q.sentence;
+        }
+        document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${currentRound.length}`;
+        document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / currentRound.length) * 100}%`;
+        document.getElementById('feedback-card').classList.remove('visible');
+        document.getElementById('good-btn').disabled = false;
+        document.getElementById('bad-btn').disabled = false;
+        document.getElementById('good-btn').className = 'btn btn-good';
+        document.getElementById('bad-btn').className = 'btn btn-bad';
+
+        requestAnimationFrame(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        });
+      }, 150);
+    }
+
+    // ===========================
+    //  ANSWER HANDLING
+    // ===========================
+
+    function handleAnswer(userSaidGood) {
+      const q = currentRound[currentIndex];
+      const correct = userSaidGood === q.isGoodTitle;
+      answers.push({ question: q, userAnswer: userSaidGood ? 'good' : 'bad', correct });
+
+      document.getElementById('good-btn').disabled = true;
+      document.getElementById('bad-btn').disabled = true;
+
+      const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
+      btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+      showFeedback(q, correct);
+    }
+
+    function showFeedback(q, correct) {
+      const card = document.getElementById('feedback-card');
+      card.classList.remove('feedback-correct', 'feedback-wrong');
+      card.classList.add(correct ? 'feedback-correct' : 'feedback-wrong');
+
+      document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
+      document.getElementById('feedback-category').textContent = CATEGORY_NAMES[q.category] || q.category;
+      document.getElementById('feedback-explanation').textContent = q.explanation;
+
+      const rewriteSection = document.getElementById('feedback-rewrite');
+      rewriteSection.classList.remove('feedback-rewrite-bad');
+      const rewriteLabel = rewriteSection.querySelector('.rewrite-label');
+      const rewriteEl = document.getElementById('rewrite-text');
+
+      if (q.badVersion) {
+        // Show what a bad version looks like (for good titles)
+        rewriteSection.classList.remove('hidden');
+        rewriteSection.classList.add('feedback-rewrite-bad');
+        rewriteLabel.textContent = correct ? 'Common mistake:' : 'A bad version would be:';
+        rewriteEl.textContent = q.badVersion;
+      } else if (q.rewrite) {
+        // Show the better version (for bad titles)
+        rewriteSection.classList.remove('hidden');
+        rewriteLabel.textContent = correct ? 'Better version:' : 'Better version:';
+        if (q.rewriteHtml) {
+          rewriteEl.innerHTML = q.rewriteHtml;
+        } else {
+          rewriteEl.textContent = q.rewrite;
+        }
+      } else {
+        rewriteSection.classList.add('hidden');
+      }
+
+      card.classList.add('visible');
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex >= currentRound.length) {
+        showResults();
+      } else {
+        showQuestion();
+      }
+    }
+
+    // ===========================
+    //  RESULTS SCREEN
+    // ===========================
+
+    function showResults() {
+      showScreen('results');
+      window.scrollTo(0, 0);
+
+      // Reset wrong-answers panel state for replay
+      document.getElementById('wrong-answers').classList.add('hidden');
+      document.getElementById('show-wrong-btn').textContent = 'Review Wrong Answers';
+
+      const correctCount = answers.filter(a => a.correct).length;
+      const total = answers.length;
+      const pct = Math.round((correctCount / total) * 100);
+
+      document.getElementById('score-display').innerHTML =
+        `<div class="score-number">${pct}%</div>` +
+        `<div class="score-fraction">${correctCount} / ${total}</div>`;
+
+      // Wrong answers review
+      const wrongAnswers = answers.filter(a => !a.correct);
+      const wrongEl = document.getElementById('wrong-answers');
+      const showWrongBtn = document.getElementById('show-wrong-btn');
+      wrongEl.innerHTML = '';
+
+      if (wrongAnswers.length === 0) {
+        showWrongBtn.classList.add('hidden');
+      } else {
+        showWrongBtn.classList.remove('hidden');
+        for (const a of wrongAnswers) {
+          const card = document.createElement('div');
+          card.className = 'wrong-answer-card';
+
+          // Use html field for visual-highlighting questions
+          const sentenceDisplay = a.question.html || a.question.sentence;
+          const useHtml = !!a.question.html;
+
+          let rewriteHTML = '';
+          if (a.question.rewriteHtml) {
+            rewriteHTML = `<div class="wrong-answer-rewrite">${a.question.rewriteHtml}</div>`;
+          } else if (a.question.rewrite) {
+            rewriteHTML = `<div class="wrong-answer-rewrite">${a.question.rewrite}</div>`;
+          }
+
+          card.innerHTML =
+            `<p class="wrong-answer-sentence">${useHtml ? sentenceDisplay : '"' + sentenceDisplay + '"'}</p>` +
+            `<p class="wrong-answer-meta">You said: ${a.userAnswer === 'good' ? 'Good Title' : 'Bad Title'} \u00b7 ${CATEGORY_NAMES[a.question.category]}</p>` +
+            `<p class="wrong-answer-explanation">${a.question.explanation}</p>` +
+            rewriteHTML;
+          wrongEl.appendChild(card);
+        }
+      }
+    }
+
+    // ===========================
+    //  EVENT LISTENERS
+    // ===========================
+
+    document.getElementById('show-wrong-btn').addEventListener('click', function() {
+      const el = document.getElementById('wrong-answers');
+      const isHidden = el.classList.contains('hidden');
+      el.classList.toggle('hidden');
+      this.textContent = isHidden ? 'Hide Wrong Answers' : 'Review Wrong Answers';
+    });
+
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    document.getElementById('good-btn').addEventListener('click', () => handleAnswer(true));
+    document.getElementById('bad-btn').addEventListener('click', () => handleAnswer(false));
+    document.getElementById('next-btn').addEventListener('click', nextQuestion);
+    document.getElementById('replay-btn').addEventListener('click', startQuiz);
+
+    document.addEventListener('keydown', function(e) {
+      const quizActive = document.querySelector('#quiz.active');
+      if (!quizActive) return;
+
+      const feedbackVisible = !document.getElementById('feedback-card').classList.contains('hidden');
+      const goodBtn = document.getElementById('good-btn');
+      const badBtn = document.getElementById('bad-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      if (e.key === 'ArrowLeft' && !badBtn.disabled) {
+        e.preventDefault();
+        handleAnswer(false);
+      } else if (e.key === 'ArrowRight' && !goodBtn.disabled) {
+        e.preventDefault();
+        handleAnswer(true);
+      } else if (e.key === 'Enter' && feedbackVisible && !nextBtn.classList.contains('hidden')) {
+        e.preventDefault();
+        nextQuestion();
+      }
+    });
+  </script>
+</body>
+</html>
