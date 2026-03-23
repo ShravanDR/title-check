@@ -390,6 +390,19 @@
       line-height: 1;
     }
 
+    .feedback-verdict {
+      font-size: 0.9375rem;
+      font-weight: 700;
+    }
+
+    .feedback-correct .feedback-verdict {
+      color: #008440;
+    }
+
+    .feedback-wrong .feedback-verdict {
+      color: #C44040;
+    }
+
     .feedback-category {
       font-size: 0.75rem;
       font-weight: 700;
@@ -766,7 +779,7 @@
       <h1>Title Check</h1>
       <p class="subtitle">Can you tell a good slide title from a bad one?<br>15 questions, drawn from our writing standards.<br>See how sharp your instincts are.</p>
       <button id="start-btn" class="btn btn-primary">Start Quiz</button>
-      <p class="meta">15 questions per round</p>
+      <p class="meta">Each round draws 15 questions from a pool of 97, so every replay is different.</p>
     </section>
 
     <section id="question" class="screen">
@@ -790,6 +803,7 @@
       <div id="feedback-card" class="feedback-card">
         <div class="feedback-header">
           <span id="feedback-icon" class="feedback-icon"></span>
+          <span id="feedback-verdict" class="feedback-verdict"></span>
           <span id="feedback-category" class="feedback-category"></span>
         </div>
         <p id="feedback-explanation" class="feedback-explanation"></p>
@@ -1762,7 +1776,8 @@
       card.classList.add(correct ? 'feedback-correct' : 'feedback-wrong');
 
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
-      document.getElementById('feedback-category').textContent = CATEGORY_NAMES[q.category] || q.category;
+      document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
+      document.getElementById('feedback-category').textContent = '\u00b7  ' + (CATEGORY_NAMES[q.category] || q.category);
       document.getElementById('feedback-explanation').textContent = q.explanation;
 
       const rewriteSection = document.getElementById('feedback-rewrite');
