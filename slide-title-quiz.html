@@ -94,18 +94,15 @@
     }
 
     .logo {
-      width: 52px;
-      height: 52px;
-      background-color: #008440;
-      color: #fcf7ea;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 28px;
+    }
+
+    .logo img {
+      height: 48px;
+      width: auto;
     }
 
     #landing h1 {
@@ -765,7 +762,7 @@
 <body>
   <div id="app">
     <section id="landing" class="screen active visible">
-      <div class="logo">DR</div>
+      <div class="logo"><img src="deck-rooster-logo.png" alt="Deck Rooster"></div>
       <h1>Title Check</h1>
       <p class="subtitle">Can you tell a good slide title from a bad one? 15 questions. Drawn from our writing standards. See how sharp your instincts are.</p>
       <button id="start-btn" class="btn btn-primary">Start Quiz</button>
