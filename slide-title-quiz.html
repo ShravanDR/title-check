@@ -775,7 +775,10 @@
           <span class="rewrite-label">Better version:</span>
           <p id="rewrite-text"></p>
         </div>
-        <button id="next-btn" class="btn btn-next">Next <span class="key-hint-inline">enter &crarr;</span></button>
+        <div class="btn-wrap">
+          <button id="next-btn" class="btn btn-next">Next</button>
+          <span class="key-hint">enter &crarr;</span>
+        </div>
       </div>
     </section>
 
@@ -1861,7 +1864,7 @@
       const quizActive = document.querySelector('#quiz.active');
       if (!quizActive) return;
 
-      const feedbackVisible = !document.getElementById('feedback-card').classList.contains('hidden');
+      const feedbackVisible = document.getElementById('feedback-card').classList.contains('visible');
       const goodBtn = document.getElementById('good-btn');
       const badBtn = document.getElementById('bad-btn');
       const nextBtn = document.getElementById('next-btn');
