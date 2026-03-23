@@ -790,7 +790,7 @@
           <button id="show-wrong-btn" class="btn btn-secondary">Review Wrong Answers</button>
           <div id="wrong-answers" class="wrong-answers hidden"></div>
           <button id="replay-btn" class="btn btn-primary">Play Again with New Questions</button>
-          <p class="meta">Each round draws 15 fresh questions from a pool of 98, so every replay is different.</p>
+          <p class="meta">Each round draws 15 fresh questions from a pool of 97, so every replay is different.</p>
         </div>
         <div class="results-right">
           <div class="checklist-section">
@@ -1383,7 +1383,7 @@
         isGoodTitle: true,
         category: "visual-highlighting",
         html: "Small M&A is fundamentally <span style='color:#C44040;font-weight:700'>broken</span>",
-        explanation: "Red bold on 'broken' draws the eye directly to the core claim. The emphasis reinforces the problem statement that the deck will solve.",
+        explanation: "The color emphasis on 'broken' draws the eye directly to the core claim. The emphasis reinforces the problem statement that the deck will solve.",
         rewrite: null,
         badVersion: "Emphasizing 'Small' instead of 'broken' would highlight a modifier rather than the core claim"
       },
@@ -1392,16 +1392,16 @@
         isGoodTitle: true,
         category: "visual-highlighting",
         html: "Chemicals are the largest and most <span style='color:#008440;font-weight:700'>globalised</span> market",
-        explanation: "Bolding 'globalised' highlights the surprising qualifier that distinguishes this market from others the audience might assume are larger.",
+        explanation: "Highlighting 'globalised' draws attention to the surprising qualifier that distinguishes this market from others the audience might assume are larger.",
         rewrite: null,
-        badVersion: "Chemicals are the largest and most globalised market (no emphasis, nothing guides the reader's eye)"
+        badVersion: "Without any emphasis, nothing guides the reader's eye to the key qualifier"
       },
       {
         sentence: "Small M&A is fundamentally broken",
         isGoodTitle: false,
         category: "visual-highlighting",
         html: "<span style='color:#C44040;font-weight:700'>Small</span> M&A is fundamentally broken",
-        explanation: "Emphasizing 'Small' is misleading because the insight is about M&A being broken, not about size. The emphasis should go on the core claim, not a modifier.",
+        explanation: "The emphasis is on the wrong word. 'Small' is a modifier, not the insight. The core claim is that M&A is broken. Highlighting should reinforce the main point, not a secondary detail.",
         rewrite: "Move the emphasis to 'broken' — the core claim, not the modifier.",
         rewriteHtml: "Small M&A is fundamentally <span style='color:#C44040;font-weight:700'>broken</span>"
       },
@@ -1410,18 +1410,9 @@
         isGoodTitle: false,
         category: "visual-highlighting",
         html: "Farmers without land titles have a <span style='color:#C44040;font-weight:700'>short term</span> outlook",
-        explanation: "The real insight is 'without land titles' — that is the root cause. Emphasizing 'short term' highlights the symptom instead of the underlying problem.",
+        explanation: "The emphasis is on the symptom ('short term') instead of the root cause ('without land titles'). Highlighting should point to the why, not the what.",
         rewrite: "Move the emphasis to 'without land titles' — the root cause, not the symptom.",
         rewriteHtml: "Farmers <span style='color:#C44040;font-weight:700'>without land titles</span> have a short term outlook"
-      },
-      {
-        sentence: "Consumer mobility needs extend far beyond UberX",
-        isGoodTitle: true,
-        category: "visual-highlighting",
-        html: "Consumer mobility needs extend far beyond <span style='color:#008440;font-weight:700'>UberX</span>",
-        explanation: "Bolding 'UberX' anchors the audience to a familiar reference point, making the broader claim about mobility needs instantly graspable.",
-        rewrite: null,
-        badVersion: "Consumer mobility needs extend far beyond UberX (no emphasis, the anchor gets lost)"
       },
 
       // ===========================
