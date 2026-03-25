@@ -478,6 +478,22 @@
       margin-left: 4px;
     }
 
+    .feedback-also-categories {
+      margin-left: 6px;
+    }
+
+    .feedback-also-categories span {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #888882;
+      background-color: #F8F8F6;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
     /* ===========================
        ARTICULATION PROMPT
     =========================== */
@@ -917,6 +933,7 @@
           <span id="feedback-icon" class="feedback-icon"></span>
           <span id="feedback-verdict" class="feedback-verdict"></span>
           <span id="feedback-category" class="feedback-category"></span>
+          <span id="feedback-also-categories" class="feedback-also-categories"></span>
         </div>
         <p id="feedback-explanation" class="feedback-explanation"></p>
         <div id="feedback-rewrite" class="feedback-rewrite">
@@ -1143,6 +1160,7 @@
         sentence: "Here's what most VCs miss about the logistics market",
         isGoodTitle: false,
         category: "false-drama",
+        alsoCategories: ["tone"],
         explanation: "The teaser format implies the audience is uninformed rather than presenting a clear insight. It creates a promise the title itself never delivers.",
         rewrite: "The logistics market has consolidated to three buyers, and none of them have modern tooling"
       },
@@ -1150,6 +1168,7 @@
         sentence: "Here's the thing about enterprise sales cycles",
         isGoodTitle: false,
         category: "false-drama",
+        alsoCategories: ["tone"],
         explanation: "This is a verbal throat-clear that adds no information. It delays the actual point and reads as filler in a written title.",
         rewrite: "Enterprise sales cycles shrank from 9 months to 11 weeks after the self-serve pilot launched"
       },
@@ -1183,6 +1202,7 @@
         sentence: "Delving into our go-to-market synergies",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["specificity"],
         explanation: "'Delving' and 'synergies' are corporate filler words that obscure meaning. They signal a lack of concrete substance behind the title.",
         rewrite: "The sales and marketing teams share a single pipeline that converts at 2x industry average"
       },
@@ -1190,6 +1210,7 @@
         sentence: "A fundamentally new paradigm for talent acquisition",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["specificity"],
         explanation: "'Paradigm' is one of the most overused buzzwords in business. If something is truly new, describe what changed in plain language.",
         rewrite: "Hiring managers fill roles in 12 days instead of 45 by screening against work samples, not resumes"
       },
@@ -1197,6 +1218,7 @@
         sentence: "It's worth noting that our retention rates are remarkably strong",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["specificity"],
         explanation: "'It's worth noting' is a hedge, and 'remarkably strong' is a subjective claim. Replace both with the actual number and let the data speak.",
         rewrite: "Logo retention is 97% at 12 months, with zero churn among customers above $50K ACV"
       },
@@ -1204,6 +1226,7 @@
         sentence: "Our platform serves as a tapestry connecting disparate data sources",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["tone"],
         explanation: "'Tapestry' and 'disparate' are decorative words that make the sentence harder to parse. Clear writing uses the simplest word that conveys the meaning.",
         rewrite: "The platform unifies EHR, claims, and lab data into a single patient timeline"
       },
@@ -1231,6 +1254,7 @@
         sentence: "Let's unpack our competitive advantage",
         isGoodTitle: false,
         category: "tone",
+        alsoCategories: ["specificity"],
         explanation: "'Let's unpack' is conversational filler borrowed from podcasts. Written slide titles should state the point, not narrate the act of explaining it.",
         rewrite: "The proprietary dataset covers 94% of US commercial properties, 3x the nearest competitor"
       },
@@ -1238,6 +1262,7 @@
         sentence: "Think of our platform as a GPS for compliance",
         isGoodTitle: false,
         category: "tone",
+        alsoCategories: ["specificity"],
         explanation: "The GPS analogy has potential but the title wastes it by starting with 'Think of'. Land the analogy by showing who it helps and what it navigates.",
         rewrite: "For legal teams stuck in regulatory mazes, our platform is a GPS for compliance — guiding them through SOC 2 and ISO 27001 simultaneously"
       },
@@ -1245,6 +1270,7 @@
         sentence: "Let's break down how our flywheel works",
         isGoodTitle: false,
         category: "tone",
+        alsoCategories: ["specificity"],
         explanation: "'Let's break down' is a spoken transition, not a written headline. The title should deliver the flywheel's punchline, not announce that a breakdown is coming.",
         rewrite: "Each new customer adds training data that improves accuracy, which attracts the next customer"
       },
@@ -1252,6 +1278,7 @@
         sentence: "Let's dive into what makes our unit economics work",
         isGoodTitle: false,
         category: "specificity",
+        alsoCategories: ["tone"],
         explanation: "'Let's dive into' announces a topic instead of stating a finding. 'What makes our unit economics work' is vague — which metric? What result? The title has zero specific information.",
         rewrite: "Unit economics turned positive in month four and have held for six consecutive quarters"
       },
@@ -1271,6 +1298,7 @@
         sentence: "It's not software. It's infrastructure.",
         isGoodTitle: false,
         category: "contrast-framing",
+        alsoCategories: ["specificity"],
         explanation: "The dramatic 'not X, it's Y' structure sounds punchy but says nothing specific. What makes it infrastructure? The title should explain, not just assert.",
         rewrite: "The platform becomes the system of record that downstream tools depend on, making it sticky from day one"
       },
@@ -1278,6 +1306,7 @@
         sentence: "The question isn't whether to automate. The question is how fast.",
         isGoodTitle: false,
         category: "contrast-framing",
+        alsoCategories: ["tone"],
         explanation: "This rhetorical device is a cliche that delays the actual point. It sounds like a keynote soundbite, not a working slide title.",
         rewrite: "Automation adoption is accelerating: 60% of our pipeline is now inbound from teams that already automated a first workflow"
       },
@@ -1285,6 +1314,7 @@
         sentence: "Not a tool, but a platform",
         isGoodTitle: false,
         category: "contrast-framing",
+        alsoCategories: ["specificity"],
         explanation: "This contrast is too vague to be useful. Every company claims to be a platform. The title should demonstrate platform-level value with a concrete example.",
         rewrite: "Customers start with invoice processing and expand to full AP/AR within 90 days on average"
       },
@@ -1292,6 +1322,7 @@
         sentence: "We didn't build a product. We built a category.",
         isGoodTitle: false,
         category: "contrast-framing",
+        alsoCategories: ["specificity"],
         explanation: "Grandiose self-framing without evidence. Category creation is a claim the market makes about you, not something you assert about yourself.",
         rewrite: "Gartner created a new Magic Quadrant category for our segment after three analysts cited our product as the reference architecture"
       },
@@ -1311,6 +1342,7 @@
         sentence: "Transforming teams, building culture, driving results",
         isGoodTitle: false,
         category: "sentence-structure",
+        alsoCategories: ["specificity"],
         explanation: "Triple-gerund lists sound energetic but are structurally empty. None of the three phrases include a subject, object, or evidence.",
         rewrite: "Engineering velocity increased 40% after the platform automated code review and deployment"
       },
@@ -1318,6 +1350,7 @@
         sentence: "Our engine identifies, qualifies, and converts leads at scale, highlighting the power of automation",
         isGoodTitle: false,
         category: "sentence-structure",
+        alsoCategories: ["word-choice"],
         explanation: "The tacked-on participial phrase ('highlighting the power of automation') weakens the sentence. If automation matters, make it the main clause.",
         rewrite: "The engine converts raw leads to qualified pipeline in under 48 hours with zero manual intervention"
       },
@@ -1332,6 +1365,7 @@
         sentence: "Scaling globally, reducing costs, increasing throughput",
         isGoodTitle: false,
         category: "sentence-structure",
+        alsoCategories: ["specificity"],
         explanation: "Another gerund list with no specifics. Each item could apply to any company. Structure the title as a complete sentence with evidence.",
         rewrite: "The platform processes cross-border payments in 14 currencies at 60% lower cost than SWIFT"
       },
@@ -1398,6 +1432,7 @@
         sentence: "Best-in-class NPS, growing 20% MoM, with enterprise contracts and a capital-efficient model",
         isGoodTitle: false,
         category: "hierarchy",
+        alsoCategories: ["specificity"],
         explanation: "Cramming four metrics into one title dilutes all of them. Pick the single most compelling proof point and lead with it.",
         rewrite: "NPS of 78 is best-in-class for enterprise SaaS and drives 40% of new logos through referrals"
       },
@@ -1591,6 +1626,7 @@
         sentence: "That is why we built MERIDIA",
         isGoodTitle: false,
         category: "false-drama",
+        alsoCategories: ["specificity"],
         explanation: "'That is why we built X' is a dramatic transition that says nothing about what the product does or why it matters. The title should state the value, not narrate the origin story.",
         rewrite: "MERIDIA digitizes land rights in 48 hours, replacing a process that takes 18 months on paper"
       },
@@ -1598,6 +1634,7 @@
         sentence: "Faster/better efficacy via Pharma-fication of CPG",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["specificity"],
         explanation: "'Pharma-fication' is an invented concept label used as if it were established. The slash construction is unclear, and 'faster/better' is vague.",
         rewrite: "Applying pharma-grade clinical testing to consumer products cuts reformulation cycles from 14 months to 3"
       },
@@ -1612,6 +1649,7 @@
         sentence: "Building a scientifically driven, high performance men's health company",
         isGoodTitle: false,
         category: "message-vs-label",
+        alsoCategories: ["specificity"],
         explanation: "This describes the company, not a finding. It's a mission statement disguised as a title. The audience learns what the company calls itself, not what it has achieved.",
         rewrite: "Three clinically validated SKUs reached $4M ARR in 11 months with zero paid acquisition"
       },
@@ -1656,6 +1694,7 @@
         sentence: "One AI platform driving value for all M&A stakeholders",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["specificity"],
         explanation: "'Driving value' is meaningless filler. 'One AI platform' tells the audience nothing about what it does or how. This is a tagline, not a title.",
         rewrite: "A single platform handles deal sourcing, due diligence, and integration tracking, cutting M&A cycle time by 40%"
       },
@@ -1677,6 +1716,7 @@
         sentence: "The World Changed Overnight. Digitisation Inflated Expectations.",
         isGoodTitle: false,
         category: "false-drama",
+        alsoCategories: ["specificity"],
         explanation: "Two sentences of grandiose stakes inflation with no specifics. Which world? What changed? Whose expectations? This is false drama masquerading as insight.",
         rewrite: "Post-COVID digital adoption jumped 5 years in 12 months, but most enterprise tools haven't kept pace"
       },
@@ -1698,6 +1738,7 @@
         sentence: "Evolved cutting-edge technology has the ability to make a big difference",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["specificity"],
         explanation: "Word salad. 'Evolved', 'cutting-edge', 'ability to make a big difference' are three consecutive vague intensifiers stacked on top of each other. Not a single specific claim.",
         rewrite: "Our NLP engine processes contracts in 90 seconds with 97.3% accuracy, replacing 4 hours of manual review"
       },
@@ -1705,6 +1746,7 @@
         sentence: "Vector completely automates BFSI workflows using cutting-edge AI/NLP technology",
         isGoodTitle: false,
         category: "word-choice",
+        alsoCategories: ["specificity"],
         explanation: "'Cutting-edge AI/NLP' is buzzword padding. 'Completely automates' is an unsubstantiated absolute. Name the specific workflow and the measurable outcome.",
         rewrite: "Vector automates KYC document verification for banks, reducing processing time from 3 days to 11 minutes"
       },
@@ -2046,6 +2088,18 @@
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
       document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
       document.getElementById('feedback-category').textContent = getCategoryName(q.category, q.isGoodTitle);
+
+      // Populate secondary category pills
+      const alsoCatsEl = document.getElementById('feedback-also-categories');
+      alsoCatsEl.innerHTML = '';
+      if (q.alsoCategories && q.alsoCategories.length > 0) {
+        q.alsoCategories.forEach(function(cat) {
+          const pill = document.createElement('span');
+          pill.textContent = getCategoryName(cat, q.isGoodTitle);
+          alsoCatsEl.appendChild(pill);
+        });
+      }
+
       document.getElementById('feedback-explanation').textContent = q.explanation;
 
       const rewriteSection = document.getElementById('feedback-rewrite');
