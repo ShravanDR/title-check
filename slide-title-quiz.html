@@ -134,12 +134,13 @@
     =========================== */
     .progress-bar-container {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
+      top: 12px;
+      left: 24px;
+      width: calc(100% - 48px);
+      height: 4px;
       background-color: #E8E8E4;
       z-index: 100;
+      border-radius: 2px;
     }
 
     .progress-bar {
@@ -147,6 +148,7 @@
       background-color: #008440;
       width: 0%;
       transition: width 0.3s ease;
+      border-radius: 2px;
     }
 
     .progress-text {
@@ -948,10 +950,10 @@
       // ===========================
       {
         sentence: "Revenue in Region A grew 15% YoY, 3x the category rate",
-        isGoodTitle: false,
-        category: "missing-so-what",
-        explanation: "The data point is anchored, but it stops short of saying why it matters. What decision or action does this growth justify?",
-        rewrite: "Revenue in Region A grew 15% YoY, 3x the category rate, opening the case for accelerating sales headcount there"
+        isGoodTitle: true,
+        category: "anchored-data",
+        explanation: "A specific data point with a meaningful benchmark comparison. The 3x outperformance speaks for itself — the audience can draw the implication.",
+        rewrite: null
       },
       {
         sentence: "Customer support tickets dropped 40% after the v3 release",
@@ -1456,11 +1458,10 @@
       // ===========================
       {
         sentence: "The best companies are already securing land rights",
-        isGoodTitle: true,
+        isGoodTitle: false,
         category: "specificity",
-        explanation: "Makes a specific, arguable claim about market behavior. An investor can agree or push back on whether the best companies are actually doing this.",
-        rewrite: null,
-        badVersion: "Land Rights Overview"
+        explanation: "'The best companies' is undefined — best by what metric? Without naming companies, a number, or a timeframe, this is a vague assertion dressed up as insight.",
+        rewrite: "Nestlé, Unilever, and Cargill have locked in land rights across 3 key regions since 2022"
       },
       {
         sentence: "We have the expertise for right cost structuring",
@@ -1537,11 +1538,10 @@
       },
       {
         sentence: "All M&A stakeholders are losing out",
-        isGoodTitle: true,
-        category: "message-vs-label",
-        explanation: "A clear, arguable claim about a market failure. It names the affected group (all stakeholders) and makes a strong negative assertion that the rest of the deck must prove.",
-        rewrite: null,
-        badVersion: "M&A Market Challenges"
+        isGoodTitle: false,
+        category: "specificity",
+        explanation: "'All stakeholders are losing out' is a sweeping generalization with no data. How much are they losing? Compared to what? This is a dramatic assertion, not an evidence-backed title.",
+        rewrite: "Buyers overpay by 20% and sellers leave 15% on the table — broken due diligence hurts both sides"
       },
       {
         sentence: "One AI platform driving value for all M&A stakeholders",
