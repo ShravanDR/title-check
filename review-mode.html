@@ -1550,7 +1550,7 @@
       {
         sentence: "Insecure land rights is a key contributor to these supply chain pressures",
         isGoodTitle: true,
-        category: "specificity",
+        category: "missing-so-what",
         explanation: "This title delivers the so-what: it names the cause (insecure land rights) and connects it to the effect (supply chain pressures). A causal finding specific enough that an investor could verify or challenge it.",
         rewrite: null,
         badVersion: "Supply Chain Challenges"
@@ -1712,22 +1712,28 @@
     // ===========================
 
     const CATEGORY_NAMES = {
-      'message-vs-label': 'Message vs Label',
-      'unanchored-number': 'Unanchored Number',
-      'missing-so-what': 'Missing So-What',
-      'anchored-data': 'Anchored Data',
-      'scale-translation': 'Scale Translation',
-      'false-drama': 'False Drama',
-      'word-choice': 'Word Choice',
-      'tone': 'Tone',
-      'contrast-framing': 'Contrast & Framing',
-      'sentence-structure': 'Sentence Structure',
-      'specificity': 'Specificity',
-      'hierarchy': 'Hierarchy',
-      'metrics-in-headline': 'Metrics in Headline',
-      'social-proof': 'Social Proof',
-      'visual-highlighting': 'Visual Highlighting'
+      'message-vs-label':    { bad: 'Message vs Label',    good: 'Clear Message' },
+      'unanchored-number':   { bad: 'Unanchored Number',   good: 'Anchored Number' },
+      'missing-so-what':     { bad: 'Missing So-What',     good: 'Clear So-What' },
+      'anchored-data':       { bad: 'Unanchored Data',     good: 'Anchored Data' },
+      'scale-translation':   { bad: 'Scale Translation',   good: 'Scale Translation' },
+      'false-drama':         { bad: 'False Drama',         good: 'Earned Drama' },
+      'word-choice':         { bad: 'Word Choice',         good: 'Clear Language' },
+      'tone':                { bad: 'Tone',                good: 'Professional Tone' },
+      'contrast-framing':    { bad: 'Contrast & Framing',  good: 'Strong Framing' },
+      'sentence-structure':  { bad: 'Sentence Structure',  good: 'Clean Structure' },
+      'specificity':         { bad: 'Specificity',         good: 'Specific & Concrete' },
+      'hierarchy':           { bad: 'Hierarchy',           good: 'Clear Hierarchy' },
+      'metrics-in-headline': { bad: 'Metrics in Headline', good: 'Metrics in Headline' },
+      'social-proof':        { bad: 'Social Proof',        good: 'Strong Social Proof' },
+      'visual-highlighting': { bad: 'Visual Highlighting', good: 'Visual Highlighting' }
     };
+
+    function getCategoryName(category, isGoodTitle) {
+      const cat = CATEGORY_NAMES[category];
+      if (!cat) return category;
+      return isGoodTitle ? cat.good : cat.bad;
+    }
 
     // ===========================
     //  STORAGE KEYS
@@ -1996,7 +2002,7 @@
 
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
       document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
-      document.getElementById('feedback-category').textContent = CATEGORY_NAMES[q.category] || q.category;
+      document.getElementById('feedback-category').textContent = getCategoryName(q.category, q.isGoodTitle);
       document.getElementById('feedback-explanation').textContent = q.explanation;
 
       const rewriteSection = document.getElementById('feedback-rewrite');
@@ -2211,7 +2217,7 @@
           card.className = 'flagged-card';
           card.style.borderLeftColor = '#008440';
 
-          const catName = CATEGORY_NAMES[q.category] || q.category;
+          const catName = getCategoryName(q.category, q.isGoodTitle);
 
           card.innerHTML =
             `<p class="flagged-sentence">"${q.sentence}"</p>` +
@@ -2243,7 +2249,7 @@
           card.className = 'flagged-card';
 
           const classification = q.isGoodTitle ? 'Good Title' : 'Bad Title';
-          const catName = CATEGORY_NAMES[q.category] || q.category;
+          const catName = getCategoryName(q.category, q.isGoodTitle);
 
           card.innerHTML =
             `<p class="flagged-sentence">"${q.sentence}"</p>` +
@@ -2276,7 +2282,7 @@
           const a = articulations[idx];
           const q = QUESTIONS[Number(idx)];
           if (!q) continue;
-          const catName = CATEGORY_NAMES[q.category] || q.category;
+          const catName = getCategoryName(q.category, q.isGoodTitle);
           lines.push(`### Q${Number(idx) + 1}: "${q.sentence}"`);
           lines.push(`- Category: ${catName}`);
           lines.push(`- Their take: ${a.text}`);
@@ -2293,7 +2299,7 @@
           if (!q) continue;
 
           const classification = q.isGoodTitle ? 'Good Title' : 'Bad Title';
-          const catName = CATEGORY_NAMES[q.category] || q.category;
+          const catName = getCategoryName(q.category, q.isGoodTitle);
 
           lines.push(`### Q${Number(idx) + 1}: "${q.sentence}"`);
           lines.push(`- Classification: ${classification}`);
