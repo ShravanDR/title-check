@@ -417,6 +417,96 @@
       margin-left: 4px;
     }
 
+    .articulation-prompt {
+      width: 100%;
+      background-color: #FDFCFB;
+      border-radius: 12px;
+      border-left: 4px solid #008440;
+      padding: 20px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      display: none;
+    }
+
+    .articulation-prompt.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .articulation-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #30473f;
+      margin-bottom: 4px;
+    }
+
+    .articulation-subtitle {
+      font-size: 0.8125rem;
+      color: #888882;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .articulation-textarea {
+      width: 100%;
+      min-height: 72px;
+      padding: 10px 12px;
+      border: 1.5px solid #D0D0CC;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: #30473f;
+      background: #FFFFFF;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .articulation-textarea:focus {
+      border-color: #008440;
+    }
+
+    .articulation-textarea::placeholder {
+      color: #b0a898;
+    }
+
+    .articulation-submit {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-articulate {
+      background-color: #008440;
+      color: #fcf7ea;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 8px;
+    }
+
+    .btn-articulate:hover {
+      background-color: #144b3e;
+    }
+
+    .btn-skip-articulate {
+      background: transparent;
+      color: #888882;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 8px 12px;
+    }
+
+    .btn-skip-articulate:hover {
+      color: #30473f;
+    }
+
     .feedback-explanation {
       font-size: 0.9375rem;
       line-height: 1.6;
@@ -806,6 +896,15 @@
           <span class="key-hint">right arrow &rarr;</span>
         </div>
       </div>
+      <div id="articulation-prompt" class="articulation-prompt">
+        <p class="articulation-title">Practice your articulation</p>
+        <p class="articulation-subtitle">You were quick — why do you think this is a bad title?</p>
+        <textarea id="articulation-textarea" class="articulation-textarea" placeholder="What's wrong with this title?"></textarea>
+        <div class="articulation-submit">
+          <button id="articulate-btn" class="btn-articulate">Submit</button>
+          <button id="skip-articulate-btn" class="btn-skip-articulate">Skip</button>
+        </div>
+      </div>
       <div id="feedback-card" class="feedback-card">
         <div class="feedback-header">
           <span id="feedback-icon" class="feedback-icon"></span>
@@ -829,6 +928,7 @@
         <div class="results-left">
           <h2 class="results-section-title">Results</h2>
           <div id="score-display" class="score-display"></div>
+          <div id="articulations-list" class="wrong-answers"></div>
           <button id="show-wrong-btn" class="btn btn-secondary">Review Wrong Answers</button>
           <div id="wrong-answers" class="wrong-answers hidden"></div>
           <button id="replay-btn" class="btn btn-primary">Play Again with New Questions</button>
@@ -839,18 +939,18 @@
             <h2 class="results-section-title">Slide Title Checklist</h2>
             <p class="checklist-intro">Run every title through these before locking it in.</p>
             <ul class="checklist">
-              <li><strong>Message, not label.</strong> Does it state a conclusion an investor could agree or disagree with? If someone can respond "so what?", rewrite it.</li>
-              <li><strong>Works standalone.</strong> If someone reads only the titles in sequence, does the story track without the presenter?</li>
-              <li><strong>Leads with the point.</strong> No setup, no announcement. Say it.</li>
-              <li><strong>Specific over vague.</strong> A name, a number, a company does more work than a category label. "Strong growth" is not a claim. "2.5x users in 5 months" is.</li>
-              <li><strong>Anchored to a norm.</strong> A number in isolation carries no weight. State the finding and the reference point it deviates from.</li>
-              <li><strong>Answers "so what?"</strong> If the implication for the business is not self-evident, add it. Tell the reader what to do with the information.</li>
-              <li><strong>One point per title.</strong> If it's doing two things, the slide isn't ready.</li>
-              <li><strong>No false drama.</strong> Cut "here's the thing," "here's the kicker," and any engagement bait. If the point is worth making, make it.</li>
-              <li><strong>No banned patterns.</strong> No "not X, it's Y" framing. No participial add-ons. No stacked rule-of-three.</li>
-              <li><strong>Clean language.</strong> No delve, synergy, paradigm, tapestry. No filler transitions. No em dashes. No intensifiers that add nothing.</li>
-              <li><strong>Length earns its place.</strong> A two-line title that conveys a full finding beats a four-word title that conveys nothing. But padding with qualifiers is not the same as adding information.</li>
+              <li><strong>Message, not label.</strong> Does it state a conclusion someone could agree or disagree with? "Revenue Analysis" is a label. "Revenue doubled YoY, driven by mid-market" is a message.</li>
+              <li><strong>Clear so-what.</strong> If the implication for the business isn't obvious, add it. Connect the data to the decision it enables.</li>
+              <li><strong>Anchored numbers.</strong> A number in isolation carries no weight. Add a benchmark, timeframe, or comparison so the audience can judge if it's impressive.</li>
+              <li><strong>Scale translation.</strong> If the number is too large to picture, translate it. "$2.1M per hospital" means nothing until it becomes "the salary of 15 nurses."</li>
+              <li><strong>Specific over vague.</strong> A name, a number, a company does more work than an adjective. "Strong growth" is not a claim. "2.5x users in 5 months" is.</li>
+              <li><strong>One point per title.</strong> If it's doing two things, the slide isn't ready. Pick the strongest proof point and lead with it.</li>
+              <li><strong>No false drama.</strong> Cut "here's the thing," "here's the kicker," and any engagement bait. If the point is worth making, make it directly.</li>
+              <li><strong>Professional tone.</strong> No "let's unpack," "let's dive into," or podcast-speak. Written slide titles state the point, they don't narrate the act of explaining it.</li>
+              <li><strong>Clean structure.</strong> No gerund lists ("transforming, building, driving"). No "not X, it's Y" cliches. No participial add-ons. Write a complete sentence.</li>
+              <li><strong>Clear language.</strong> No delve, synergy, paradigm, tapestry. No filler transitions. No intensifiers that add nothing. If the word can be cut without losing meaning, cut it.</li>
               <li><strong>Social proof names names.</strong> "Marquee investors" is empty. "Sequoia, Tiger Global, and DST at $120M" is proof.</li>
+              <li><strong>Visual highlighting.</strong> If a word is emphasised on the slide, make sure it's the core claim, not a modifier. Highlight "broken," not "small."</li>
             </ul>
           </div>
         </div>
@@ -1713,6 +1813,25 @@
     let currentRound = [];
     let currentIndex = 0;
     let answers = [];
+    let articulations = {}; // keyed by question index: { text, sentence, category }
+    let questionStartTime = null; // timestamp when question was shown
+    const QUICK_THRESHOLD_MS = 5000; // 5 seconds
+    let pendingAnswer = null; // holds { userSaidGood, q, correct } during articulation
+
+    const STORAGE_ARTICULATIONS = 'quiz-articulations';
+
+    function loadArticulations() {
+      try {
+        const raw = localStorage.getItem(STORAGE_ARTICULATIONS);
+        if (raw) articulations = JSON.parse(raw);
+      } catch (e) {
+        articulations = {};
+      }
+    }
+
+    function saveArticulations() {
+      localStorage.setItem(STORAGE_ARTICULATIONS, JSON.stringify(articulations));
+    }
 
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => {
@@ -1731,6 +1850,8 @@
       currentRound = selectRound(QUESTIONS, ROUND_SIZE);
       currentIndex = 0;
       answers = [];
+      articulations = {};
+      loadArticulations();
       showScreen('question');
       showQuestion();
     }
@@ -1743,6 +1864,12 @@
       // Fade out, swap content, fade in
       card.style.opacity = '0';
       card.style.transform = 'translateY(8px)';
+
+      // Hide articulation prompt
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.classList.remove('visible');
+      artPrompt.style.display = 'none';
+      document.getElementById('articulation-textarea').value = '';
 
       setTimeout(() => {
         if (q.html) {
@@ -1758,6 +1885,9 @@
         document.getElementById('good-btn').className = 'btn btn-good';
         document.getElementById('bad-btn').className = 'btn btn-bad';
 
+        // Start timing
+        questionStartTime = Date.now();
+
         requestAnimationFrame(() => {
           card.style.opacity = '1';
           card.style.transform = 'translateY(0)';
@@ -1772,6 +1902,8 @@
     function handleAnswer(userSaidGood) {
       const q = currentRound[currentIndex];
       const correct = userSaidGood === q.isGoodTitle;
+      const elapsed = Date.now() - questionStartTime;
+
       answers.push({ question: q, userAnswer: userSaidGood ? 'good' : 'bad', correct });
 
       document.getElementById('good-btn').disabled = true;
@@ -1779,7 +1911,56 @@
 
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+
+      // Quick bad-title decision? Ask for articulation first
+      if (!userSaidGood && elapsed < QUICK_THRESHOLD_MS) {
+        pendingAnswer = { userSaidGood, q, correct };
+        showArticulationPrompt();
+        return;
+      }
+
       showFeedback(q, correct);
+    }
+
+    function showArticulationPrompt() {
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.style.display = 'block';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          artPrompt.classList.add('visible');
+        });
+      });
+      setTimeout(() => document.getElementById('articulation-textarea').focus(), 250);
+    }
+
+    function submitArticulation() {
+      const text = document.getElementById('articulation-textarea').value.trim();
+      if (text && pendingAnswer) {
+        const q = pendingAnswer.q;
+        articulations[currentIndex] = {
+          text: text,
+          sentence: q.sentence,
+          category: q.category,
+          isGoodTitle: q.isGoodTitle
+        };
+        saveArticulations();
+      }
+      finishAfterArticulation();
+    }
+
+    function skipArticulation() {
+      finishAfterArticulation();
+    }
+
+    function finishAfterArticulation() {
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.classList.remove('visible');
+      setTimeout(() => { artPrompt.style.display = 'none'; }, 250);
+
+      if (pendingAnswer) {
+        showFeedback(pendingAnswer.q, pendingAnswer.correct);
+        pendingAnswer = null;
+      }
     }
 
     function showFeedback(q, correct) {
@@ -1836,6 +2017,11 @@
       showScreen('results');
       window.scrollTo(0, 0);
 
+      // Hide articulation prompt
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.classList.remove('visible');
+      artPrompt.style.display = 'none';
+
       // Reset wrong-answers panel state for replay
       document.getElementById('wrong-answers').classList.add('hidden');
       document.getElementById('show-wrong-btn').textContent = 'Review Wrong Answers';
@@ -1847,6 +2033,37 @@
       document.getElementById('score-display').innerHTML =
         `<div class="score-number">${pct}%</div>` +
         `<div class="score-fraction">${correctCount} / ${total}</div>`;
+
+      // Articulations section
+      const artKeys = Object.keys(articulations);
+      const artListEl = document.getElementById('articulations-list');
+      artListEl.innerHTML = '';
+
+      if (artKeys.length > 0) {
+        const artTitle = document.createElement('p');
+        artTitle.style.cssText = 'font-size:0.9375rem;font-weight:600;color:#30473f;margin-bottom:12px;';
+        artTitle.textContent = `Your Articulations (${artKeys.length})`;
+        artListEl.appendChild(artTitle);
+
+        for (const idx of artKeys.sort((a, b) => Number(a) - Number(b))) {
+          const a = articulations[idx];
+          const q = currentRound[Number(idx)];
+          if (!q) continue;
+
+          const card = document.createElement('div');
+          card.className = 'wrong-answer-card';
+          card.style.borderLeftColor = '#008440';
+
+          const catName = getCategoryName(q.category, q.isGoodTitle);
+
+          card.innerHTML =
+            `<p class="wrong-answer-sentence">"${q.sentence}"</p>` +
+            `<p class="wrong-answer-meta"><span style="background:#F0F0EC;padding:2px 8px;border-radius:4px;font-weight:700;color:#30473f;">${catName}</span> \u00b7 Q#${Number(idx) + 1}</p>` +
+            `<p class="wrong-answer-explanation" style="background-color:#F0F5F2;">${a.text}</p>`;
+
+          artListEl.appendChild(card);
+        }
+      }
 
       // Wrong answers review
       const wrongAnswers = answers.filter(a => !a.correct);
@@ -1894,6 +2111,8 @@
       this.textContent = isHidden ? 'Hide Wrong Answers' : 'Review Wrong Answers';
     });
 
+    document.getElementById('articulate-btn').addEventListener('click', submitArticulation);
+    document.getElementById('skip-articulate-btn').addEventListener('click', skipArticulation);
     document.getElementById('start-btn').addEventListener('click', startQuiz);
     document.getElementById('good-btn').addEventListener('click', () => handleAnswer(true));
     document.getElementById('bad-btn').addEventListener('click', () => handleAnswer(false));
@@ -1903,6 +2122,15 @@
     document.addEventListener('keydown', function(e) {
       const quizActive = document.querySelector('#question.active');
       if (!quizActive) return;
+
+      // Handle Enter in articulation textarea to submit
+      if (document.activeElement && document.activeElement.id === 'articulation-textarea') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          submitArticulation();
+        }
+        return;
+      }
 
       const feedbackVisible = document.getElementById('feedback-card').classList.contains('visible');
       const goodBtn = document.getElementById('good-btn');
