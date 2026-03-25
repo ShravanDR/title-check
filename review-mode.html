@@ -1828,6 +1828,9 @@
     let articulations = {}; // keyed by question index: { text, sentence, category }
     let questionStartTime = null; // timestamp when question was shown
     const QUICK_THRESHOLD_MS = 5000; // 5 seconds
+    let articulationCount = 0;
+    const MAX_ARTICULATIONS = 3;
+    let lastArticulationIndex = -99;
 
     // ===========================
     //  PERSISTENCE
@@ -2016,9 +2019,13 @@
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
 
-      // Quick bad-title decision? Ask for articulation first
-      if (!userSaidGood && elapsed < QUICK_THRESHOLD_MS) {
+      // Quick bad-title decision? Ask for articulation (max 3 per round, not consecutive)
+      if (!userSaidGood && elapsed < QUICK_THRESHOLD_MS &&
+          articulationCount < MAX_ARTICULATIONS &&
+          currentIndex - lastArticulationIndex > 1) {
         pendingAnswer = { userSaidGood, q, correct };
+        articulationCount++;
+        lastArticulationIndex = currentIndex;
         showArticulationPrompt();
         return;
       }

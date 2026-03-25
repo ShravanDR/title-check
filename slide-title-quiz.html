@@ -1891,6 +1891,9 @@
     let questionStartTime = null; // timestamp when question was shown
     const QUICK_THRESHOLD_MS = 5000; // 5 seconds
     let pendingAnswer = null; // holds { userSaidGood, q, correct } during articulation
+    let articulationCount = 0; // how many articulations prompted this round
+    const MAX_ARTICULATIONS = 3;
+    let lastArticulationIndex = -99; // track last prompted index to avoid consecutive
 
     const STORAGE_ARTICULATIONS = 'quiz-articulations';
 
@@ -1925,6 +1928,8 @@
       currentIndex = 0;
       answers = [];
       articulations = {};
+      articulationCount = 0;
+      lastArticulationIndex = -99;
       loadArticulations();
       showScreen('question');
       showQuestion();
@@ -1986,9 +1991,13 @@
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
 
-      // Quick bad-title decision? Ask for articulation first
-      if (!userSaidGood && elapsed < QUICK_THRESHOLD_MS) {
+      // Quick bad-title decision? Ask for articulation (max 3 per round, not consecutive)
+      if (!userSaidGood && elapsed < QUICK_THRESHOLD_MS &&
+          articulationCount < MAX_ARTICULATIONS &&
+          currentIndex - lastArticulationIndex > 1) {
         pendingAnswer = { userSaidGood, q, correct };
+        articulationCount++;
+        lastArticulationIndex = currentIndex;
         showArticulationPrompt();
         return;
       }
