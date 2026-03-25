@@ -2045,8 +2045,7 @@
       // Show "your take" if there's an articulation for this question
       const yourTake = document.getElementById('your-take');
       const yourTakeText = document.getElementById('your-take-text');
-      const qIdx = currentQuestions[currentIndex];
-      const lastArticulation = articulations[qIdx];
+      const lastArticulation = articulations[currentIndex];
       if (lastArticulation && lastArticulation.text) {
         yourTakeText.textContent = lastArticulation.text;
         yourTake.classList.remove('hidden');
