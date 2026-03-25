@@ -380,6 +380,34 @@
       color: #C44040;
     }
 
+    .your-take {
+      margin-bottom: 14px;
+      padding: 10px 14px;
+      background-color: #F0F5F2;
+      border-radius: 8px;
+    }
+
+    .your-take.hidden {
+      display: none !important;
+    }
+
+    .your-take-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #008440;
+      margin-bottom: 4px;
+    }
+
+    .your-take-text {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #30473f;
+      font-style: italic;
+    }
+
     .feedback-header {
       display: flex;
       align-items: center;
@@ -898,7 +926,7 @@
       </div>
       <div id="articulation-prompt" class="articulation-prompt">
         <p class="articulation-title">Practice your articulation</p>
-        <p class="articulation-subtitle">You were quick — why do you think this is a bad title?</p>
+        <p class="articulation-subtitle">You're confident — why do you think this is a bad title?</p>
         <textarea id="articulation-textarea" class="articulation-textarea" placeholder="What's wrong with this title?"></textarea>
         <div class="articulation-submit">
           <button id="articulate-btn" class="btn-articulate">Submit</button>
@@ -906,6 +934,10 @@
         </div>
       </div>
       <div id="feedback-card" class="feedback-card">
+        <div id="your-take" class="your-take hidden">
+          <span class="your-take-label">Your take:</span>
+          <p id="your-take-text" class="your-take-text"></p>
+        </div>
         <div class="feedback-header">
           <span id="feedback-icon" class="feedback-icon"></span>
           <span id="feedback-verdict" class="feedback-verdict"></span>
@@ -1247,8 +1279,8 @@
       {
         sentence: "Let's dive into what makes our unit economics work",
         isGoodTitle: false,
-        category: "tone",
-        explanation: "'Let's dive into' is a verbal crutch that adds no information. The title should state the conclusion about unit economics directly.",
+        category: "specificity",
+        explanation: "'Let's dive into' announces a topic instead of stating a finding. 'What makes our unit economics work' is vague — which metric? What result? The title has zero specific information.",
         rewrite: "Unit economics turned positive in month four and have held for six consecutive quarters"
       },
       {
@@ -1967,6 +1999,18 @@
       const card = document.getElementById('feedback-card');
       card.classList.remove('feedback-correct', 'feedback-wrong');
       card.classList.add(correct ? 'feedback-correct' : 'feedback-wrong');
+
+      // Show "your take" if there's an articulation for this question
+      const yourTake = document.getElementById('your-take');
+      const yourTakeText = document.getElementById('your-take-text');
+      const qIdx = currentQuestions[currentIndex];
+      const lastArticulation = articulations[qIdx];
+      if (lastArticulation && lastArticulation.text) {
+        yourTakeText.textContent = lastArticulation.text;
+        yourTake.classList.remove('hidden');
+      } else {
+        yourTake.classList.add('hidden');
+      }
 
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
       document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
