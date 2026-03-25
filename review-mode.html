@@ -439,11 +439,108 @@
     }
 
     .feedback-category {
-      font-size: 0.75rem;
+      font-size: 0.8125rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em;
+      color: #30473f;
+      background-color: #F0F0EC;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    /* ===========================
+       ARTICULATION PROMPT
+    =========================== */
+    .articulation-prompt {
+      width: 100%;
+      background-color: #FDFCFB;
+      border-radius: 12px;
+      border-left: 4px solid #008440;
+      padding: 20px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      display: none;
+    }
+
+    .articulation-prompt.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .articulation-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #30473f;
+      margin-bottom: 4px;
+    }
+
+    .articulation-subtitle {
+      font-size: 0.8125rem;
       color: #888882;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .articulation-textarea {
+      width: 100%;
+      min-height: 72px;
+      padding: 10px 12px;
+      border: 1.5px solid #D0D0CC;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: #30473f;
+      background: #FFFFFF;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .articulation-textarea:focus {
+      border-color: #008440;
+    }
+
+    .articulation-textarea::placeholder {
+      color: #b0a898;
+    }
+
+    .articulation-submit {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-articulate {
+      background-color: #008440;
+      color: #fcf7ea;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 8px;
+    }
+
+    .btn-articulate:hover {
+      background-color: #144b3e;
+    }
+
+    .btn-skip-articulate {
+      background: transparent;
+      color: #888882;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 8px 12px;
+    }
+
+    .btn-skip-articulate:hover {
+      color: #30473f;
     }
 
     .feedback-explanation {
@@ -774,6 +871,15 @@
           <span class="key-hint">right arrow &rarr;</span>
         </div>
       </div>
+      <div id="articulation-prompt" class="articulation-prompt">
+        <p class="articulation-title">Practice your articulation</p>
+        <p class="articulation-subtitle">You were quick — why do you think this is a bad title?</p>
+        <textarea id="articulation-textarea" class="articulation-textarea" placeholder="What's wrong with this title?"></textarea>
+        <div class="articulation-submit">
+          <button id="articulate-btn" class="btn-articulate">Submit</button>
+          <button id="skip-articulate-btn" class="btn-skip-articulate">Skip</button>
+        </div>
+      </div>
       <div id="feedback-card" class="feedback-card">
         <div class="feedback-header">
           <span id="feedback-icon" class="feedback-icon"></span>
@@ -816,6 +922,7 @@
           <span class="stat-label">Flagged</span>
         </div>
       </div>
+      <div id="articulations-list" class="flagged-list"></div>
       <div id="flagged-list" class="flagged-list"></div>
       <button id="copy-btn" class="btn btn-copy-feedback hidden">Copy All Feedback</button>
       <span id="copy-toast" class="copy-toast">Copied to clipboard</span>
@@ -962,22 +1069,23 @@
         sentence: "Our TAM is $400 billion",
         isGoodTitle: false,
         category: "scale-translation",
-        explanation: "Very few people have an intuitive feel for what $400B means. The number is so large it becomes abstract without a real-world comparison.",
-        rewrite: "The TAM is $400B, roughly the size of the entire US restaurant industry"
+        explanation: "The raw number is fine, but the title lacks specifics about which market and what makes $400B meaningful. Without context, $400B is just a big number.",
+        rewrite: "Targeting a $400B medical insurance market, growing 18% annually as coverage expands"
       },
       {
         sentence: "We process 2.3 petabytes of data monthly",
         isGoodTitle: false,
         category: "scale-translation",
-        explanation: "Almost no one can picture a petabyte. Technical scale needs a human-relatable analogy to make the audience feel the magnitude.",
-        rewrite: "We process enough data monthly to fill every book ever published, twice"
+        explanation: "Almost no one can picture a petabyte. Technical scale needs a human-relatable analogy to make the audience feel the magnitude. The analogy should reference relatable data comparisons, not obscure book comparisons.",
+        rewrite: "We process more data monthly than Google did in an entire year a decade ago — proof of unmatched platform scale"
       },
       {
         sentence: "The average enterprise wastes 12,000 person-hours per year on compliance",
-        isGoodTitle: false,
+        isGoodTitle: true,
         category: "scale-translation",
-        explanation: "12,000 person-hours is hard to picture. Translating to full-time employees makes the waste tangible and emotionally resonant.",
-        rewrite: "The average enterprise loses the equivalent of six full-time employees to manual compliance work"
+        explanation: "The number is concrete and the framing ('wastes') gives the audience a clear emotional anchor. The title lands the message even without a translation — 12,000 hours is large enough to feel painful on its own.",
+        rewrite: null,
+        badVersion: "Enterprise Compliance Costs"
       },
       {
         sentence: "Each hospital in our pipeline spends $2.1M per year on the workflow we replace, roughly the salary of 15 nurses",
@@ -1098,8 +1206,8 @@
         sentence: "Think of our platform as a GPS for compliance",
         isGoodTitle: false,
         category: "tone",
-        explanation: "Forced analogies ('GPS for X') oversimplify and come across as condescending. Say what the product actually does instead.",
-        rewrite: "The platform guides teams through every step of SOC 2 and ISO 27001 certification simultaneously"
+        explanation: "The GPS analogy has potential but the title wastes it by starting with 'Think of'. Land the analogy by showing who it helps and what it navigates.",
+        rewrite: "For legal teams stuck in regulatory mazes, our platform is a GPS for compliance — guiding them through SOC 2 and ISO 27001 simultaneously"
       },
       {
         sentence: "Let's break down how our flywheel works",
@@ -1159,7 +1267,7 @@
         sentence: "The platform handles the full audit lifecycle, from evidence collection through remediation tracking",
         isGoodTitle: true,
         category: "contrast-framing",
-        explanation: "Instead of using a dramatic contrast, this title describes the actual scope of the platform with concrete endpoints, which is far more convincing.",
+        explanation: "Instead of using a dramatic contrast, this title describes the actual scope of the platform with concrete endpoints, which is far more convincing. A strategic value-add version could emphasize stickiness: handling the full lifecycle makes the platform a one-stop shop that's hard to rip out.",
         rewrite: null,
         badVersion: "It's not a tool. It's a platform."
       },
@@ -1499,11 +1607,11 @@
         badVersion: "Global Supply Chain Shifts"
       },
       {
-        sentence: "TC 2.0 started with an operational transformation",
+        sentence: "Meridian started with an operational transformation",
         isGoodTitle: false,
         category: "message-vs-label",
         explanation: "'Operational transformation' is a label with no specifics. What transformed? What was the result? The title tells the audience nothing they can act on.",
-        rewrite: "TC 2.0 cut order fulfillment from 6 days to same-day by rebuilding the warehouse stack from scratch"
+        rewrite: "Meridian cut order fulfillment from 6 days to same-day by rebuilding the warehouse stack from scratch"
       },
       {
         sentence: "All M&A stakeholders are losing out",
@@ -1627,6 +1735,7 @@
 
     const STORAGE_FLAGS = 'quiz-review-flags';
     const STORAGE_PROGRESS = 'quiz-review-progress';
+    const STORAGE_ARTICULATIONS = 'quiz-review-articulations';
 
     // ===========================
     //  STATE
@@ -1636,6 +1745,9 @@
     let currentIndex = 0;
     let answers = []; // array of { userAnswer, correct } indexed by question index
     let flags = {};   // keyed by question index: { note: string }
+    let articulations = {}; // keyed by question index: { text, sentence, category }
+    let questionStartTime = null; // timestamp when question was shown
+    const QUICK_THRESHOLD_MS = 5000; // 5 seconds
 
     // ===========================
     //  PERSISTENCE
@@ -1652,6 +1764,19 @@
 
     function saveFlags() {
       localStorage.setItem(STORAGE_FLAGS, JSON.stringify(flags));
+    }
+
+    function loadArticulations() {
+      try {
+        const raw = localStorage.getItem(STORAGE_ARTICULATIONS);
+        if (raw) articulations = JSON.parse(raw);
+      } catch (e) {
+        articulations = {};
+      }
+    }
+
+    function saveArticulations() {
+      localStorage.setItem(STORAGE_ARTICULATIONS, JSON.stringify(articulations));
     }
 
     function loadProgress() {
@@ -1703,6 +1828,7 @@
 
     function initLanding() {
       loadFlags();
+      loadArticulations();
       const hasProgress = loadProgress();
 
       document.getElementById('landing-subtitle').innerHTML =
@@ -1761,6 +1887,12 @@
         document.getElementById('flag-btn').classList.add('flagged');
       }
 
+      // Hide articulation prompt
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.classList.remove('visible');
+      artPrompt.style.display = 'none';
+      document.getElementById('articulation-textarea').value = '';
+
       setTimeout(() => {
         if (q.html) {
           sentenceEl.innerHTML = q.html;
@@ -1775,6 +1907,9 @@
         document.getElementById('good-btn').className = 'btn btn-good';
         document.getElementById('bad-btn').className = 'btn btn-bad';
 
+        // Start timing
+        questionStartTime = Date.now();
+
         requestAnimationFrame(() => {
           card.style.opacity = '1';
           card.style.transform = 'translateY(0)';
@@ -1786,9 +1921,13 @@
     //  ANSWER HANDLING
     // ===========================
 
+    let pendingAnswer = null; // holds { userSaidGood, q, correct } during articulation
+
     function handleAnswer(userSaidGood) {
       const q = QUESTIONS[currentIndex];
       const correct = userSaidGood === q.isGoodTitle;
+      const elapsed = Date.now() - questionStartTime;
+
       answers[currentIndex] = { userAnswer: userSaidGood ? 'good' : 'bad', correct };
 
       document.getElementById('good-btn').disabled = true;
@@ -1796,8 +1935,58 @@
 
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+
+      // Quick bad-title decision? Ask for articulation first
+      if (!userSaidGood && elapsed < QUICK_THRESHOLD_MS) {
+        pendingAnswer = { userSaidGood, q, correct };
+        showArticulationPrompt();
+        return;
+      }
+
       showFeedback(q, correct);
       saveProgress();
+    }
+
+    function showArticulationPrompt() {
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.style.display = 'block';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          artPrompt.classList.add('visible');
+        });
+      });
+      setTimeout(() => document.getElementById('articulation-textarea').focus(), 250);
+    }
+
+    function submitArticulation() {
+      const text = document.getElementById('articulation-textarea').value.trim();
+      if (text && pendingAnswer) {
+        const q = pendingAnswer.q;
+        articulations[currentIndex] = {
+          text: text,
+          sentence: q.sentence,
+          category: q.category,
+          isGoodTitle: q.isGoodTitle
+        };
+        saveArticulations();
+      }
+      finishAfterArticulation();
+    }
+
+    function skipArticulation() {
+      finishAfterArticulation();
+    }
+
+    function finishAfterArticulation() {
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.classList.remove('visible');
+      setTimeout(() => { artPrompt.style.display = 'none'; }, 250);
+
+      if (pendingAnswer) {
+        showFeedback(pendingAnswer.q, pendingAnswer.correct);
+        saveProgress();
+        pendingAnswer = null;
+      }
     }
 
     function showFeedback(q, correct) {
@@ -1807,7 +1996,7 @@
 
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
       document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
-      document.getElementById('feedback-category').textContent = '\u00b7  ' + (CATEGORY_NAMES[q.category] || q.category);
+      document.getElementById('feedback-category').textContent = CATEGORY_NAMES[q.category] || q.category;
       document.getElementById('feedback-explanation').textContent = q.explanation;
 
       const rewriteSection = document.getElementById('feedback-rewrite');
@@ -1879,6 +2068,11 @@
       const flagBtn = document.getElementById('flag-btn');
       flagBtn.classList.toggle('flagged', !!flags[currentIndex]);
       flagBtn.textContent = flags[currentIndex] ? 'Flagged' : 'Flag';
+
+      // Hide articulation prompt
+      const artPrompt = document.getElementById('articulation-prompt');
+      artPrompt.classList.remove('visible');
+      artPrompt.style.display = 'none';
 
       setTimeout(() => {
         if (q.html) {
@@ -1989,21 +2183,52 @@
       const totalReviewed = answers.filter(a => a !== undefined && a !== null).length;
       const flaggedKeys = Object.keys(flags);
       const flaggedCount = flaggedKeys.length;
+      const artKeys = Object.keys(articulations);
+      const artCount = artKeys.length;
 
       document.getElementById('stat-total').textContent = totalReviewed;
       document.getElementById('stat-flagged').textContent = flaggedCount;
 
+      const copyBtn = document.getElementById('copy-btn');
+      copyBtn.classList.toggle('hidden', flaggedCount === 0 && artCount === 0);
+
+      // Articulations section
+      const artListEl = document.getElementById('articulations-list');
+      artListEl.innerHTML = '';
+
+      if (artCount > 0) {
+        const artTitle = document.createElement('p');
+        artTitle.className = 'flagged-list-title';
+        artTitle.textContent = `Articulations (${artCount})`;
+        artListEl.appendChild(artTitle);
+
+        for (const idx of artKeys.sort((a, b) => Number(a) - Number(b))) {
+          const a = articulations[idx];
+          const q = QUESTIONS[Number(idx)];
+          if (!q) continue;
+
+          const card = document.createElement('div');
+          card.className = 'flagged-card';
+          card.style.borderLeftColor = '#008440';
+
+          const catName = CATEGORY_NAMES[q.category] || q.category;
+
+          card.innerHTML =
+            `<p class="flagged-sentence">"${q.sentence}"</p>` +
+            `<p class="flagged-meta"><span style="background:#F0F0EC;padding:2px 8px;border-radius:4px;font-weight:700;color:#30473f;">${catName}</span> \u00b7 Q#${Number(idx) + 1}</p>` +
+            `<p class="flagged-note" style="background-color:#F0F5F2;">${a.text}</p>`;
+
+          artListEl.appendChild(card);
+        }
+      }
+
+      // Flagged section
       const listEl = document.getElementById('flagged-list');
       listEl.innerHTML = '';
 
-      const copyBtn = document.getElementById('copy-btn');
-
-      if (flaggedCount === 0) {
+      if (flaggedCount === 0 && artCount === 0) {
         listEl.innerHTML = '<p class="no-flags-msg">No items flagged. Nice \u2014 the pool looks clean.</p>';
-        copyBtn.classList.add('hidden');
-      } else {
-        copyBtn.classList.remove('hidden');
-
+      } else if (flaggedCount > 0) {
         const title = document.createElement('p');
         title.className = 'flagged-list-title';
         title.textContent = `Flagged Items (${flaggedCount})`;
@@ -2022,7 +2247,7 @@
 
           card.innerHTML =
             `<p class="flagged-sentence">"${q.sentence}"</p>` +
-            `<p class="flagged-meta">Classified as: ${classification} \u00b7 ${catName} \u00b7 Q#${Number(idx) + 1}</p>` +
+            `<p class="flagged-meta">Classified as: ${classification} \u00b7 <span style="background:#F0F0EC;padding:2px 8px;border-radius:4px;font-weight:700;color:#30473f;">${catName}</span> \u00b7 Q#${Number(idx) + 1}</p>` +
             (f.note ? `<p class="flagged-note">${f.note}</p>` : '');
 
           listEl.appendChild(card);
@@ -2036,25 +2261,46 @@
 
     document.getElementById('copy-btn').addEventListener('click', function() {
       const flaggedKeys = Object.keys(flags).sort((a, b) => Number(a) - Number(b));
+      const artKeys = Object.keys(articulations).sort((a, b) => Number(a) - Number(b));
       const lines = [];
 
       lines.push('# Quiz Review Feedback');
       lines.push(`Total flagged: ${flaggedKeys.length}`);
+      lines.push(`Total articulations: ${artKeys.length}`);
       lines.push('');
 
-      for (const idx of flaggedKeys) {
-        const f = flags[idx];
-        const q = QUESTIONS[Number(idx)];
-        if (!q) continue;
-
-        const classification = q.isGoodTitle ? 'Good Title' : 'Bad Title';
-        const catName = CATEGORY_NAMES[q.category] || q.category;
-
-        lines.push(`## Q${Number(idx) + 1}: "${q.sentence}"`);
-        lines.push(`- Classification: ${classification}`);
-        lines.push(`- Category: ${catName}`);
-        if (f.note) lines.push(`- Note: ${f.note}`);
+      if (artKeys.length > 0) {
+        lines.push('## Team Articulations');
         lines.push('');
+        for (const idx of artKeys) {
+          const a = articulations[idx];
+          const q = QUESTIONS[Number(idx)];
+          if (!q) continue;
+          const catName = CATEGORY_NAMES[q.category] || q.category;
+          lines.push(`### Q${Number(idx) + 1}: "${q.sentence}"`);
+          lines.push(`- Category: ${catName}`);
+          lines.push(`- Their take: ${a.text}`);
+          lines.push('');
+        }
+      }
+
+      if (flaggedKeys.length > 0) {
+        lines.push('## Flagged Items');
+        lines.push('');
+        for (const idx of flaggedKeys) {
+          const f = flags[idx];
+          const q = QUESTIONS[Number(idx)];
+          if (!q) continue;
+
+          const classification = q.isGoodTitle ? 'Good Title' : 'Bad Title';
+          const catName = CATEGORY_NAMES[q.category] || q.category;
+
+          lines.push(`### Q${Number(idx) + 1}: "${q.sentence}"`);
+          lines.push(`- Classification: ${classification}`);
+          lines.push(`- Category: ${catName}`);
+          if (f.note) lines.push(`- Note: ${f.note}`);
+          lines.push('');
+        }
       }
 
       navigator.clipboard.writeText(lines.join('\n')).then(() => {
@@ -2068,6 +2314,8 @@
     //  EVENT LISTENERS
     // ===========================
 
+    document.getElementById('articulate-btn').addEventListener('click', submitArticulation);
+    document.getElementById('skip-articulate-btn').addEventListener('click', skipArticulation);
     document.getElementById('start-btn').addEventListener('click', startReview);
     document.getElementById('startover-btn').addEventListener('click', function() {
       clearProgress();
@@ -2082,6 +2330,8 @@
       clearProgress();
       flags = {};
       saveFlags();
+      articulations = {};
+      saveArticulations();
       currentIndex = 0;
       answers = [];
       initLanding();
@@ -2091,6 +2341,15 @@
     document.addEventListener('keydown', function(e) {
       const quizActive = document.querySelector('#question.active');
       if (!quizActive) return;
+
+      // Handle Enter in articulation textarea to submit
+      if (document.activeElement && document.activeElement.id === 'articulation-textarea') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          submitArticulation();
+        }
+        return;
+      }
 
       // Don't capture keys while typing in the flag textarea
       if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;

@@ -406,11 +406,15 @@
     }
 
     .feedback-category {
-      font-size: 0.75rem;
+      font-size: 0.8125rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: #888882;
+      color: #30473f;
+      background-color: #F0F0EC;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-left: 4px;
     }
 
     .feedback-explanation {
@@ -993,22 +997,23 @@
         sentence: "Our TAM is $400 billion",
         isGoodTitle: false,
         category: "scale-translation",
-        explanation: "Very few people have an intuitive feel for what $400B means. The number is so large it becomes abstract without a real-world comparison.",
-        rewrite: "The TAM is $400B, roughly the size of the entire US restaurant industry"
+        explanation: "The raw number is fine, but the title lacks specifics about which market and what makes $400B meaningful. Without context, $400B is just a big number.",
+        rewrite: "Targeting a $400B medical insurance market, growing 18% annually as coverage expands"
       },
       {
         sentence: "We process 2.3 petabytes of data monthly",
         isGoodTitle: false,
         category: "scale-translation",
-        explanation: "Almost no one can picture a petabyte. Technical scale needs a human-relatable analogy to make the audience feel the magnitude.",
-        rewrite: "We process enough data monthly to fill every book ever published, twice"
+        explanation: "Almost no one can picture a petabyte. Technical scale needs a human-relatable analogy to make the audience feel the magnitude. The analogy should reference relatable data comparisons, not obscure book comparisons.",
+        rewrite: "We process more data monthly than Google did in an entire year a decade ago — proof of unmatched platform scale"
       },
       {
         sentence: "The average enterprise wastes 12,000 person-hours per year on compliance",
-        isGoodTitle: false,
+        isGoodTitle: true,
         category: "scale-translation",
-        explanation: "12,000 person-hours is hard to picture. Translating to full-time employees makes the waste tangible and emotionally resonant.",
-        rewrite: "The average enterprise loses the equivalent of six full-time employees to manual compliance work"
+        explanation: "The number is concrete and the framing ('wastes') gives the audience a clear emotional anchor. The title lands the message even without a translation — 12,000 hours is large enough to feel painful on its own.",
+        rewrite: null,
+        badVersion: "Enterprise Compliance Costs"
       },
       {
         sentence: "Each hospital in our pipeline spends $2.1M per year on the workflow we replace, roughly the salary of 15 nurses",
@@ -1129,8 +1134,8 @@
         sentence: "Think of our platform as a GPS for compliance",
         isGoodTitle: false,
         category: "tone",
-        explanation: "Forced analogies ('GPS for X') oversimplify and come across as condescending. Say what the product actually does instead.",
-        rewrite: "The platform guides teams through every step of SOC 2 and ISO 27001 certification simultaneously"
+        explanation: "The GPS analogy has potential but the title wastes it by starting with 'Think of'. Land the analogy by showing who it helps and what it navigates.",
+        rewrite: "For legal teams stuck in regulatory mazes, our platform is a GPS for compliance — guiding them through SOC 2 and ISO 27001 simultaneously"
       },
       {
         sentence: "Let's break down how our flywheel works",
@@ -1190,7 +1195,7 @@
         sentence: "The platform handles the full audit lifecycle, from evidence collection through remediation tracking",
         isGoodTitle: true,
         category: "contrast-framing",
-        explanation: "Instead of using a dramatic contrast, this title describes the actual scope of the platform with concrete endpoints, which is far more convincing.",
+        explanation: "Instead of using a dramatic contrast, this title describes the actual scope of the platform with concrete endpoints, which is far more convincing. A strategic value-add version could emphasize stickiness: handling the full lifecycle makes the platform a one-stop shop that's hard to rip out.",
         rewrite: null,
         badVersion: "It's not a tool. It's a platform."
       },
@@ -1530,11 +1535,11 @@
         badVersion: "Global Supply Chain Shifts"
       },
       {
-        sentence: "TC 2.0 started with an operational transformation",
+        sentence: "Meridian started with an operational transformation",
         isGoodTitle: false,
         category: "message-vs-label",
         explanation: "'Operational transformation' is a label with no specifics. What transformed? What was the result? The title tells the audience nothing they can act on.",
-        rewrite: "TC 2.0 cut order fulfillment from 6 days to same-day by rebuilding the warehouse stack from scratch"
+        rewrite: "Meridian cut order fulfillment from 6 days to same-day by rebuilding the warehouse stack from scratch"
       },
       {
         sentence: "All M&A stakeholders are losing out",
@@ -1777,7 +1782,7 @@
 
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
       document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
-      document.getElementById('feedback-category').textContent = '\u00b7  ' + (CATEGORY_NAMES[q.category] || q.category);
+      document.getElementById('feedback-category').textContent = CATEGORY_NAMES[q.category] || q.category;
       document.getElementById('feedback-explanation').textContent = q.explanation;
 
       const rewriteSection = document.getElementById('feedback-rewrite');
