@@ -397,7 +397,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: #008440;
+      color: #888882;
       margin-bottom: 4px;
     }
 
@@ -2099,11 +2099,15 @@
         yourTake.classList.add('hidden');
       }
 
-      document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
+      const verdictEl = document.getElementById('feedback-verdict');
       if (justArticulated) {
-        document.getElementById('feedback-verdict').textContent = q.isGoodTitle ? 'Good Title' : 'Bad Title';
+        document.getElementById('feedback-icon').textContent = q.isGoodTitle ? '\u2713' : '\u2717';
+        verdictEl.textContent = q.isGoodTitle ? 'Good Title' : 'Bad Title';
+        verdictEl.style.color = q.isGoodTitle ? '#008440' : '#C44040';
       } else {
-        document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
+        document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
+        verdictEl.textContent = correct ? 'Correct!' : 'Wrong!';
+        verdictEl.style.color = correct ? '#008440' : '#C44040';
       }
       document.getElementById('feedback-category').textContent = getCategoryName(q.category, q.isGoodTitle);
 
