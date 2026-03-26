@@ -178,18 +178,9 @@
       padding: 36px 32px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
       margin-bottom: 28px;
-      transition: background-color 0.2s ease, opacity 0.25s ease, transform 0.25s ease, border-color 0.2s ease;
+      transition: background-color 0.2s ease, opacity 0.25s ease, transform 0.25s ease;
       position: relative;
       overflow: visible;
-      border: 3px solid transparent;
-    }
-
-    .question-card.verdict-good {
-      border-color: #008440;
-    }
-
-    .question-card.verdict-bad {
-      border-color: #C44040;
     }
 
     .sentence {
@@ -201,44 +192,33 @@
       letter-spacing: 0;
     }
 
-    /* Verdict circle icon on bottom edge of card */
-    .verdict-circle {
-      position: absolute;
-      bottom: -20px;
-      left: 50%;
-      transform: translateX(-50%) scale(0);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #FFFFFF;
-      font-size: 1.125rem;
-      font-weight: 700;
+    /* Title quality pill (shown inside card after answer) */
+    .title-quality-pill {
+      display: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 16px;
       opacity: 0;
-      pointer-events: none;
-      z-index: 10;
+      transition: opacity 0.3s ease;
     }
 
-    .verdict-circle.verdict-circle-good {
-      background-color: #008440;
-    }
-
-    .verdict-circle.verdict-circle-bad {
-      background-color: #C44040;
-    }
-
-    .verdict-circle.visible {
+    .title-quality-pill.visible {
+      display: inline-block;
       opacity: 1;
-      transform: translateX(-50%) scale(1);
-      animation: verdict-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
     }
 
-    @keyframes verdict-pop {
-      0%   { opacity: 0; transform: translateX(-50%) scale(0.3); }
-      60%  { opacity: 1; transform: translateX(-50%) scale(1.15); }
-      100% { opacity: 1; transform: translateX(-50%) scale(1); }
+    .title-quality-pill.pill-good {
+      background-color: #f0f9f2;
+      color: #008440;
+      border: 1px solid #a8ddb5;
+    }
+
+    .title-quality-pill.pill-bad {
+      background-color: #FDF3F3;
+      color: #C44040;
+      border: 1px solid #F0C8C8;
     }
 
     /* Correct flash animation */
@@ -395,12 +375,13 @@
     .guess-result-banner {
       width: 100%;
       text-align: center;
-      font-size: 0.8125rem;
-      padding: 8px 16px;
-      border-radius: 8px;
+      font-size: 1.125rem;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: 12px;
       margin-bottom: 16px;
       opacity: 0;
-      transform: translateY(4px);
+      transform: scale(0.95);
       transition: opacity 0.25s ease, transform 0.25s ease;
       pointer-events: none;
       display: none;
@@ -409,18 +390,18 @@
     .guess-result-banner.visible {
       display: block;
       opacity: 1;
-      transform: translateY(0);
+      transform: scale(1);
       pointer-events: auto;
     }
 
     .guess-result-banner.guess-correct {
-      background-color: #f0f9f2;
-      color: #008440;
+      background-color: #008440;
+      color: #FFFFFF;
     }
 
     .guess-result-banner.guess-wrong {
-      background-color: #FDF3F3;
-      color: #C44040;
+      background-color: #C44040;
+      color: #FFFFFF;
     }
 
     /* ===========================
@@ -1081,7 +1062,7 @@
       <p id="progress-text" class="progress-text">1 / 20</p>
       <div class="question-card" id="question-card">
         <p id="sentence" class="sentence"></p>
-        <div id="verdict-circle" class="verdict-circle"></div>
+        <span id="title-quality-pill" class="title-quality-pill"></span>
       </div>
       <div class="buttons">
         <div class="btn-wrap">
@@ -2143,11 +2124,9 @@
       document.getElementById('articulation-textarea').value = '';
       const guessBanner = document.getElementById('guess-result-banner');
       guessBanner.classList.remove('visible', 'guess-correct', 'guess-wrong');
-      const qCard = document.getElementById('question-card');
-      qCard.classList.remove('verdict-good', 'verdict-bad');
-      const verdictCircle = document.getElementById('verdict-circle');
-      verdictCircle.classList.remove('visible', 'verdict-circle-good', 'verdict-circle-bad');
-      verdictCircle.textContent = '';
+      const pill = document.getElementById('title-quality-pill');
+      pill.classList.remove('visible', 'pill-good', 'pill-bad');
+      pill.textContent = '';
 
       setTimeout(() => {
         if (q.html) {
@@ -2190,16 +2169,14 @@
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
 
-      // Show verdict border + circle icon on the question card
-      const qCard = document.getElementById('question-card');
-      qCard.classList.add(q.isGoodTitle ? 'verdict-good' : 'verdict-bad');
-      const verdictCircle = document.getElementById('verdict-circle');
-      verdictCircle.textContent = q.isGoodTitle ? '\u2713' : '\u2717';
-      verdictCircle.classList.remove('visible', 'verdict-circle-good', 'verdict-circle-bad');
-      verdictCircle.classList.add(q.isGoodTitle ? 'verdict-circle-good' : 'verdict-circle-bad');
+      // Show title quality pill inside the question card
+      const pill = document.getElementById('title-quality-pill');
+      pill.textContent = q.isGoodTitle ? 'Good Title' : 'Bad Title';
+      pill.classList.remove('visible', 'pill-good', 'pill-bad');
+      pill.classList.add(q.isGoodTitle ? 'pill-good' : 'pill-bad');
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          verdictCircle.classList.add('visible');
+          pill.classList.add('visible');
         });
       });
 
@@ -2273,7 +2250,7 @@
       const guessBanner = document.getElementById('guess-result-banner');
       guessBanner.classList.remove('visible', 'guess-correct', 'guess-wrong');
       guessBanner.classList.add(correct ? 'guess-correct' : 'guess-wrong');
-      guessBanner.textContent = correct ? '\u2713 You got it right' : '\u2717 Not quite';
+      guessBanner.textContent = correct ? 'You got it right \u2713' : 'Not quite \u2717';
       // Use rAF to trigger transition
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
