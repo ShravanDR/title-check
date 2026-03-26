@@ -2033,7 +2033,7 @@
       localStorage.setItem(STORAGE_ARTICULATIONS, JSON.stringify(articulations));
     }
 
-    const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzBYENyZY_DRZHnQmHhRwI9ZFWKsUoMnkS9NIvZTF2pAWiZcB2BOULGByxHbWQ9YPIdQg/exec';
+    const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwPGCpDOAXAq8lYfCd97qvA2AjNVwl5RCxiOVis3oyRQSH1bfIcsbx32t1fblO1MvLCnw/exec';
 
     function sendArticulationsToSheet() {
       const artKeys = Object.keys(articulations);
@@ -2056,7 +2056,6 @@
       fetch(SHEETS_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       }).catch(() => {}); // silent fail
     }
