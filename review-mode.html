@@ -185,7 +185,18 @@
       padding: 36px 32px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
       margin-bottom: 28px;
-      transition: background-color 0.2s ease, opacity 0.25s ease, transform 0.25s ease;
+      transition: background-color 0.2s ease, opacity 0.25s ease, transform 0.25s ease, border-color 0.2s ease;
+      position: relative;
+      overflow: visible;
+      border: 3px solid transparent;
+    }
+
+    .question-card.verdict-good {
+      border-color: #008440;
+    }
+
+    .question-card.verdict-bad {
+      border-color: #C44040;
     }
 
     .sentence {
@@ -195,6 +206,46 @@
       line-height: 1.4;
       color: #30473f;
       letter-spacing: 0;
+    }
+
+    /* Verdict circle icon on bottom edge of card */
+    .verdict-circle {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-size: 1.125rem;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .verdict-circle.verdict-circle-good {
+      background-color: #008440;
+    }
+
+    .verdict-circle.verdict-circle-bad {
+      background-color: #C44040;
+    }
+
+    .verdict-circle.visible {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+      animation: verdict-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+    }
+
+    @keyframes verdict-pop {
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.3); }
+      60%  { opacity: 1; transform: translateX(-50%) scale(1.15); }
+      100% { opacity: 1; transform: translateX(-50%) scale(1); }
     }
 
     /* Correct flash animation */
@@ -902,8 +953,9 @@
         <div id="progress-bar" class="progress-bar"></div>
       </div>
       <p id="progress-text" class="progress-text">1 / 97</p>
-      <div class="question-card">
+      <div class="question-card" id="question-card">
         <p id="sentence" class="sentence"></p>
+        <div id="verdict-circle" class="verdict-circle"></div>
       </div>
       <div class="buttons">
         <div class="btn-wrap">
@@ -1967,11 +2019,16 @@
         document.getElementById('flag-btn').classList.add('flagged');
       }
 
-      // Hide articulation prompt
+      // Hide articulation prompt and reset verdict icon + card border
       const artPrompt = document.getElementById('articulation-prompt');
       artPrompt.classList.remove('visible');
       artPrompt.style.display = 'none';
       document.getElementById('articulation-textarea').value = '';
+      const qCard = document.getElementById('question-card');
+      qCard.classList.remove('verdict-good', 'verdict-bad');
+      const verdictCircle = document.getElementById('verdict-circle');
+      verdictCircle.classList.remove('visible', 'verdict-circle-good', 'verdict-circle-bad');
+      verdictCircle.textContent = '';
 
       setTimeout(() => {
         if (q.html) {
@@ -2015,6 +2072,19 @@
 
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+
+      // Show verdict border + circle icon on the question card
+      const qCard = document.getElementById('question-card');
+      qCard.classList.add(q.isGoodTitle ? 'verdict-good' : 'verdict-bad');
+      const verdictCircle = document.getElementById('verdict-circle');
+      verdictCircle.textContent = q.isGoodTitle ? '\u2713' : '\u2717';
+      verdictCircle.classList.remove('visible', 'verdict-circle-good', 'verdict-circle-bad');
+      verdictCircle.classList.add(q.isGoodTitle ? 'verdict-circle-good' : 'verdict-circle-bad');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          verdictCircle.classList.add('visible');
+        });
+      });
 
       // No articulation in review mode — go straight to feedback
 
@@ -2167,10 +2237,15 @@
       flagBtn.classList.toggle('flagged', !!flags[currentIndex]);
       flagBtn.textContent = flags[currentIndex] ? 'Flagged' : 'Flag';
 
-      // Hide articulation prompt
+      // Hide articulation prompt and reset verdict icon + card border
       const artPrompt = document.getElementById('articulation-prompt');
       artPrompt.classList.remove('visible');
       artPrompt.style.display = 'none';
+      const qCardPrev = document.getElementById('question-card');
+      qCardPrev.classList.remove('verdict-good', 'verdict-bad');
+      const verdictCirclePrev = document.getElementById('verdict-circle');
+      verdictCirclePrev.classList.remove('visible', 'verdict-circle-good', 'verdict-circle-bad');
+      verdictCirclePrev.textContent = '';
 
       setTimeout(() => {
         if (q.html) {
@@ -2190,6 +2265,13 @@
           document.getElementById('bad-btn').className = 'btn btn-bad';
           const btn = a.userAnswer === 'good' ? document.getElementById('good-btn') : document.getElementById('bad-btn');
           btn.classList.add(a.correct ? 'correct-flash' : 'wrong-flash');
+          // Show verdict border + circle for previously answered question
+          const qCardInner = document.getElementById('question-card');
+          qCardInner.classList.add(q.isGoodTitle ? 'verdict-good' : 'verdict-bad');
+          const vcInner = document.getElementById('verdict-circle');
+          vcInner.textContent = q.isGoodTitle ? '\u2713' : '\u2717';
+          vcInner.classList.add(q.isGoodTitle ? 'verdict-circle-good' : 'verdict-circle-bad');
+          vcInner.classList.add('visible');
           showFeedback(q, a.correct);
         } else {
           document.getElementById('good-btn').disabled = false;

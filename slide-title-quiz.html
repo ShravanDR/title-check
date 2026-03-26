@@ -178,7 +178,18 @@
       padding: 36px 32px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
       margin-bottom: 28px;
-      transition: background-color 0.2s ease, opacity 0.25s ease, transform 0.25s ease;
+      transition: background-color 0.2s ease, opacity 0.25s ease, transform 0.25s ease, border-color 0.2s ease;
+      position: relative;
+      overflow: visible;
+      border: 3px solid transparent;
+    }
+
+    .question-card.verdict-good {
+      border-color: #008440;
+    }
+
+    .question-card.verdict-bad {
+      border-color: #C44040;
     }
 
     .sentence {
@@ -190,28 +201,44 @@
       letter-spacing: 0;
     }
 
-    /* Title verdict icon */
-    .title-verdict-icon {
-      display: block;
-      margin-top: 16px;
-      font-size: 1.5rem;
-      height: 0;
-      overflow: hidden;
+    /* Verdict circle icon on bottom edge of card */
+    .verdict-circle {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-size: 1.125rem;
+      font-weight: 700;
       opacity: 0;
-      transform: scale(0.3);
+      pointer-events: none;
+      z-index: 10;
     }
 
-    .title-verdict-icon.visible {
-      height: auto;
+    .verdict-circle.verdict-circle-good {
+      background-color: #008440;
+    }
+
+    .verdict-circle.verdict-circle-bad {
+      background-color: #C44040;
+    }
+
+    .verdict-circle.visible {
       opacity: 1;
-      transform: scale(1);
+      transform: translateX(-50%) scale(1);
       animation: verdict-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
     }
 
     @keyframes verdict-pop {
-      0%   { opacity: 0; transform: scale(0.3); }
-      60%  { opacity: 1; transform: scale(1.15); }
-      100% { opacity: 1; transform: scale(1); }
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.3); }
+      60%  { opacity: 1; transform: translateX(-50%) scale(1.15); }
+      100% { opacity: 1; transform: translateX(-50%) scale(1); }
     }
 
     /* Correct flash animation */
@@ -942,7 +969,7 @@
       <div class="logo"><img src="deck-rooster-logo.png" alt="Deck Rooster"></div>
       <h1>Title Check</h1>
       <p class="subtitle">Can you tell a good slide title from a bad one?<br>15 questions, drawn from our writing standards.<br>See how sharp your instincts are.</p>
-      <input id="player-name" type="text" placeholder="Your name" style="width:100%;max-width:280px;padding:10px 14px;border:1.5px solid #D0D0CC;border-radius:10px;font-family:inherit;font-size:0.9375rem;color:#30473f;background:#FFFFFF;outline:none;text-align:center;margin-bottom:16px;" />
+      <input id="player-email" type="email" placeholder="Your email" style="width:100%;max-width:280px;padding:10px 14px;border:1.5px solid #D0D0CC;border-radius:10px;font-family:inherit;font-size:0.9375rem;color:#30473f;background:#FFFFFF;outline:none;text-align:center;margin-bottom:16px;" />
       <button id="start-btn" class="btn btn-primary">Start Quiz</button>
       <p class="meta">Each round draws 15 questions from a pool of 97, so every replay is different.</p>
     </section>
@@ -952,9 +979,9 @@
         <div id="progress-bar" class="progress-bar"></div>
       </div>
       <p id="progress-text" class="progress-text">1 / 20</p>
-      <div class="question-card">
+      <div class="question-card" id="question-card">
         <p id="sentence" class="sentence"></p>
-        <span id="title-verdict-icon" class="title-verdict-icon"></span>
+        <div id="verdict-circle" class="verdict-circle"></div>
       </div>
       <div class="buttons">
         <div class="btn-wrap">
@@ -1946,13 +1973,13 @@
       const payload = {
         articulations: artKeys.map(idx => {
           const a = articulations[idx];
-          const q = currentQuestions[Number(idx)];
+          const q = currentRound[Number(idx)];
           return {
-            name: localStorage.getItem('quiz-player-name') || 'Anonymous',
+            email: localStorage.getItem('quiz-user-email') || '',
             question: a.sentence,
-            category: CATEGORY_NAMES[a.category] || a.category,
+            category: getCategoryName(a.category, a.isGoodTitle),
             articulation: a.text,
-            wasCorrect: answers[Number(idx)] ? (answers[Number(idx)].correct ? 'Yes' : 'No') : 'Unknown'
+            wasCorrect: answers[Number(idx)] ? answers[Number(idx)].correct : false
           };
         })
       };
@@ -2000,12 +2027,16 @@
       card.style.opacity = '0';
       card.style.transform = 'translateY(8px)';
 
-      // Hide articulation prompt and verdict icon
+      // Hide articulation prompt and reset verdict icon + card border
       const artPrompt = document.getElementById('articulation-prompt');
       artPrompt.classList.remove('visible');
       artPrompt.style.display = 'none';
       document.getElementById('articulation-textarea').value = '';
-      document.getElementById('title-verdict-icon').classList.remove('visible');
+      const qCard = document.getElementById('question-card');
+      qCard.classList.remove('verdict-good', 'verdict-bad');
+      const verdictCircle = document.getElementById('verdict-circle');
+      verdictCircle.classList.remove('visible', 'verdict-circle-good', 'verdict-circle-bad');
+      verdictCircle.textContent = '';
 
       setTimeout(() => {
         if (q.html) {
@@ -2048,13 +2079,16 @@
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
 
-      // Show verdict icon on the title card
-      const verdictIcon = document.getElementById('title-verdict-icon');
-      verdictIcon.textContent = q.isGoodTitle ? '✅' : '❌';
-      verdictIcon.classList.remove('visible');
+      // Show verdict border + circle icon on the question card
+      const qCard = document.getElementById('question-card');
+      qCard.classList.add(q.isGoodTitle ? 'verdict-good' : 'verdict-bad');
+      const verdictCircle = document.getElementById('verdict-circle');
+      verdictCircle.textContent = q.isGoodTitle ? '\u2713' : '\u2717';
+      verdictCircle.classList.remove('visible', 'verdict-circle-good', 'verdict-circle-bad');
+      verdictCircle.classList.add(q.isGoodTitle ? 'verdict-circle-good' : 'verdict-circle-bad');
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          verdictIcon.classList.add('visible');
+          verdictCircle.classList.add('visible');
         });
       });
 
@@ -2302,14 +2336,14 @@
     document.getElementById('articulate-btn').addEventListener('click', submitArticulation);
     document.getElementById('skip-articulate-btn').addEventListener('click', skipArticulation);
     document.getElementById('start-btn').addEventListener('click', function() {
-      const nameInput = document.getElementById('player-name');
-      const name = nameInput.value.trim();
-      if (name) localStorage.setItem('quiz-player-name', name);
+      const emailInput = document.getElementById('player-email');
+      const email = emailInput.value.trim();
+      if (email) localStorage.setItem('quiz-user-email', email);
       startQuiz();
     });
-    // Pre-fill name from localStorage
-    const savedName = localStorage.getItem('quiz-player-name');
-    if (savedName) document.getElementById('player-name').value = savedName;
+    // Pre-fill email from localStorage
+    const savedEmail = localStorage.getItem('quiz-user-email');
+    if (savedEmail) document.getElementById('player-email').value = savedEmail;
     document.getElementById('good-btn').addEventListener('click', () => handleAnswer(true));
     document.getElementById('bad-btn').addEventListener('click', () => handleAnswer(false));
     document.getElementById('next-btn').addEventListener('click', nextQuestion);
