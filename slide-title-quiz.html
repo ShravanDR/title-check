@@ -938,20 +938,47 @@
 
     .skill-download {
       margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid #E8E8E4;
-      text-align: center;
+      padding: 28px 24px;
+      background: #FFFFFF;
+      border-radius: 14px;
+      border-left: 4px solid #008440;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+      text-align: left;
+    }
+
+    .skill-download-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #008440;
+      margin-bottom: 8px;
     }
 
     .skill-download-text {
-      font-size: 0.9375rem;
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.125rem;
       font-weight: 600;
       color: #30473f;
-      margin-bottom: 12px;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .skill-download-desc {
+      font-size: 0.8125rem;
+      color: #888882;
+      line-height: 1.5;
+      margin-bottom: 16px;
     }
 
     .skill-download .btn {
-      margin-bottom: 8px;
+      width: 100%;
+      background-color: #008440;
+      color: #fcf7ea;
+    }
+
+    .skill-download .btn:hover {
+      background-color: #144b3e;
     }
 
     /* ===========================
@@ -1095,9 +1122,10 @@
           <button id="replay-btn" class="btn btn-primary">Play Again with New Questions</button>
           <p class="meta">Each round draws 15 fresh questions from a pool of 97, so every replay is different.</p>
           <div class="skill-download">
-            <p class="skill-download-text">Want to evaluate your deck's slide titles?</p>
-            <button id="download-skill-btn" class="btn btn-secondary">Download Claude Skill</button>
-            <p class="meta">Add this to a Claude project to audit any deck's titles automatically.</p>
+            <p class="skill-download-label">Claude Skill</p>
+            <p class="skill-download-text">Audit any deck's slide titles with AI</p>
+            <p class="skill-download-desc">Download this skill, add it to a Claude project, and upload any PDF deck. Claude will evaluate every title against these writing standards and suggest rewrites.</p>
+            <button id="download-skill-btn" class="btn btn-primary">Download Title Audit Skill</button>
           </div>
         </div>
         <div class="results-right">
@@ -1108,6 +1136,7 @@
             </div>
             <p class="checklist-intro">Run every title through these before locking it in.</p>
             <ul class="checklist">
+              <li><strong>Narrative flow.</strong> Read all your titles in sequence. Does each one follow logically from the last? No redundant slides, no jarring topic jumps, no circling back to something already covered.</li>
               <li><strong>Message, not label.</strong> Does it state a conclusion someone could agree or disagree with? "Revenue Analysis" is a label. "Revenue doubled YoY, driven by mid-market" is a message.</li>
               <li><strong>Clear so-what.</strong> If the implication for the business isn't obvious, add it. Connect the data to the decision it enables.</li>
               <li><strong>Anchored numbers.</strong> A number in isolation carries no weight. Add a benchmark, timeframe, or comparison so the audience can judge if it's impressive.</li>
@@ -1120,7 +1149,6 @@
               <li><strong>Clear language.</strong> No delve, synergy, paradigm, tapestry. No filler transitions. No intensifiers that add nothing. If the word can be cut without losing meaning, cut it.</li>
               <li><strong>Social proof names names.</strong> "Marquee investors" is empty. "Sequoia, Tiger Global, and DST at $120M" is proof.</li>
               <li><strong>Visual highlighting.</strong> If a word is emphasised on the slide, make sure it's the core claim, not a modifier. Highlight "broken," not "small."</li>
-              <li><strong>Narrative flow.</strong> Read all your titles in sequence. Does each one follow logically from the last? No redundant slides, no jarring topic jumps, no circling back to something already covered.</li>
             </ul>
             <span id="checklist-toast" class="checklist-toast">Copied!</span>
           </div>
