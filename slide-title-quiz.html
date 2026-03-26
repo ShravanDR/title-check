@@ -2068,13 +2068,17 @@
       finishAfterArticulation();
     }
 
+    let justArticulated = false; // flag set when articulation was just submitted
+
     function finishAfterArticulation() {
       const artPrompt = document.getElementById('articulation-prompt');
       artPrompt.classList.remove('visible');
       setTimeout(() => { artPrompt.style.display = 'none'; }, 250);
 
       if (pendingAnswer) {
+        justArticulated = true;
         showFeedback(pendingAnswer.q, pendingAnswer.correct);
+        justArticulated = false;
         pendingAnswer = null;
       }
     }
@@ -2095,9 +2099,8 @@
         yourTake.classList.add('hidden');
       }
 
-      const hasArticulation = lastArticulation && lastArticulation.text;
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
-      if (hasArticulation) {
+      if (justArticulated) {
         document.getElementById('feedback-verdict').textContent = q.isGoodTitle ? 'Good Title' : 'Bad Title';
       } else {
         document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
