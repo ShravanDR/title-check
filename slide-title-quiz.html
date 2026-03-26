@@ -918,6 +918,7 @@
       <div class="logo"><img src="deck-rooster-logo.png" alt="Deck Rooster"></div>
       <h1>Title Check</h1>
       <p class="subtitle">Can you tell a good slide title from a bad one?<br>15 questions, drawn from our writing standards.<br>See how sharp your instincts are.</p>
+      <input id="player-name" type="text" placeholder="Your name" style="width:100%;max-width:280px;padding:10px 14px;border:1.5px solid #D0D0CC;border-radius:10px;font-family:inherit;font-size:0.9375rem;color:#30473f;background:#FFFFFF;outline:none;text-align:center;margin-bottom:16px;" />
       <button id="start-btn" class="btn btn-primary">Start Quiz</button>
       <p class="meta">Each round draws 15 questions from a pool of 97, so every replay is different.</p>
     </section>
@@ -1894,6 +1895,7 @@
     let articulationCount = 0; // how many articulations prompted this round
     const MAX_ARTICULATIONS = 3;
     let lastArticulationIndex = -99; // track last prompted index to avoid consecutive
+    let articulatedCategories = new Set(); // categories already prompted this round
 
     const STORAGE_ARTICULATIONS = 'quiz-articulations';
 
@@ -1908,6 +1910,34 @@
 
     function saveArticulations() {
       localStorage.setItem(STORAGE_ARTICULATIONS, JSON.stringify(articulations));
+    }
+
+    const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzBYENyZY_DRZHnQmHhRwI9ZFWKsUoMnkS9NIvZTF2pAWiZcB2BOULGByxHbWQ9YPIdQg/exec';
+
+    function sendArticulationsToSheet() {
+      const artKeys = Object.keys(articulations);
+      if (artKeys.length === 0) return;
+
+      const payload = {
+        articulations: artKeys.map(idx => {
+          const a = articulations[idx];
+          const q = currentQuestions[Number(idx)];
+          return {
+            name: localStorage.getItem('quiz-player-name') || 'Anonymous',
+            question: a.sentence,
+            category: CATEGORY_NAMES[a.category] || a.category,
+            articulation: a.text,
+            wasCorrect: answers[Number(idx)] ? (answers[Number(idx)].correct ? 'Yes' : 'No') : 'Unknown'
+          };
+        })
+      };
+
+      fetch(SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => {}); // silent fail
     }
 
     function showScreen(id) {
@@ -1930,6 +1960,7 @@
       articulations = {};
       articulationCount = 0;
       lastArticulationIndex = -99;
+      articulatedCategories = new Set();
       loadArticulations();
       showScreen('question');
       showQuestion();
@@ -1991,13 +2022,15 @@
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
 
-      // Quick bad-title decision? Ask for articulation (max 3 per round, not consecutive)
-      if (!userSaidGood && elapsed < QUICK_THRESHOLD_MS &&
+      // Bad title? Ask for articulation (max 3 per round, not consecutive, not same category)
+      if (!userSaidGood &&
           articulationCount < MAX_ARTICULATIONS &&
-          currentIndex - lastArticulationIndex > 1) {
+          currentIndex - lastArticulationIndex > 1 &&
+          !articulatedCategories.has(q.category)) {
         pendingAnswer = { userSaidGood, q, correct };
         articulationCount++;
         lastArticulationIndex = currentIndex;
+        articulatedCategories.add(q.category);
         showArticulationPrompt();
         return;
       }
@@ -2122,6 +2155,7 @@
     function showResults() {
       showScreen('results');
       window.scrollTo(0, 0);
+      sendArticulationsToSheet();
 
       // Hide articulation prompt
       const artPrompt = document.getElementById('articulation-prompt');
@@ -2219,7 +2253,15 @@
 
     document.getElementById('articulate-btn').addEventListener('click', submitArticulation);
     document.getElementById('skip-articulate-btn').addEventListener('click', skipArticulation);
-    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    document.getElementById('start-btn').addEventListener('click', function() {
+      const nameInput = document.getElementById('player-name');
+      const name = nameInput.value.trim();
+      if (name) localStorage.setItem('quiz-player-name', name);
+      startQuiz();
+    });
+    // Pre-fill name from localStorage
+    const savedName = localStorage.getItem('quiz-player-name');
+    if (savedName) document.getElementById('player-name').value = savedName;
     document.getElementById('good-btn').addEventListener('click', () => handleAnswer(true));
     document.getElementById('bad-btn').addEventListener('click', () => handleAnswer(false));
     document.getElementById('next-btn').addEventListener('click', nextQuestion);
