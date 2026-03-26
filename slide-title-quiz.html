@@ -390,6 +390,40 @@
     }
 
     /* ===========================
+       GUESS RESULT BANNER
+    =========================== */
+    .guess-result-banner {
+      width: 100%;
+      text-align: center;
+      font-size: 0.8125rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      display: none;
+    }
+
+    .guess-result-banner.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .guess-result-banner.guess-correct {
+      background-color: #f0f9f2;
+      color: #008440;
+    }
+
+    .guess-result-banner.guess-wrong {
+      background-color: #FDF3F3;
+      color: #C44040;
+    }
+
+    /* ===========================
        FEEDBACK CARD
     =========================== */
     .feedback-card {
@@ -414,13 +448,11 @@
     }
 
     .feedback-card.feedback-correct {
-      border-left-color: #008440;
-      background-color: #F7FDFB;
+      border-left-color: #D0D0CC;
     }
 
     .feedback-card.feedback-wrong {
-      border-left-color: #C44040;
-      background-color: #FDF9F9;
+      border-left-color: #D0D0CC;
     }
 
     .feedback-rewrite.feedback-rewrite-bad {
@@ -464,24 +496,6 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 10px;
-    }
-
-    .feedback-icon {
-      font-size: 1.125rem;
-      line-height: 1;
-    }
-
-    .feedback-verdict {
-      font-size: 0.9375rem;
-      font-weight: 700;
-    }
-
-    .feedback-correct .feedback-verdict {
-      color: #008440;
-    }
-
-    .feedback-wrong .feedback-verdict {
-      color: #C44040;
     }
 
     .feedback-category {
@@ -1079,6 +1093,7 @@
           <span class="key-hint">right arrow &rarr;</span>
         </div>
       </div>
+      <div id="guess-result-banner" class="guess-result-banner"></div>
       <div id="articulation-prompt" class="articulation-prompt">
         <p class="articulation-title">Practice your articulation</p>
         <p class="articulation-subtitle">You're confident — why do you think this is a bad title?</p>
@@ -1094,8 +1109,6 @@
           <p id="your-take-text" class="your-take-text"></p>
         </div>
         <div class="feedback-header">
-          <span id="feedback-icon" class="feedback-icon"></span>
-          <span id="feedback-verdict" class="feedback-verdict"></span>
           <span id="feedback-category" class="feedback-category"></span>
           <span id="feedback-also-categories" class="feedback-also-categories"></span>
         </div>
@@ -2123,11 +2136,13 @@
       card.style.opacity = '0';
       card.style.transform = 'translateY(8px)';
 
-      // Hide articulation prompt and reset verdict icon + card border
+      // Hide articulation prompt, guess banner, and reset verdict icon + card border
       const artPrompt = document.getElementById('articulation-prompt');
       artPrompt.classList.remove('visible');
       artPrompt.style.display = 'none';
       document.getElementById('articulation-textarea').value = '';
+      const guessBanner = document.getElementById('guess-result-banner');
+      guessBanner.classList.remove('visible', 'guess-correct', 'guess-wrong');
       const qCard = document.getElementById('question-card');
       qCard.classList.remove('verdict-good', 'verdict-bad');
       const verdictCircle = document.getElementById('verdict-circle');
@@ -2254,6 +2269,18 @@
       card.classList.remove('feedback-correct', 'feedback-wrong');
       card.classList.add(correct ? 'feedback-correct' : 'feedback-wrong');
 
+      // Show guess result banner
+      const guessBanner = document.getElementById('guess-result-banner');
+      guessBanner.classList.remove('visible', 'guess-correct', 'guess-wrong');
+      guessBanner.classList.add(correct ? 'guess-correct' : 'guess-wrong');
+      guessBanner.textContent = correct ? '\u2713 You got it right' : '\u2717 Not quite';
+      // Use rAF to trigger transition
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          guessBanner.classList.add('visible');
+        });
+      });
+
       // Show "your take" if there's an articulation for this question
       const yourTake = document.getElementById('your-take');
       const yourTakeText = document.getElementById('your-take-text');
@@ -2265,16 +2292,6 @@
         yourTake.classList.add('hidden');
       }
 
-      const verdictEl = document.getElementById('feedback-verdict');
-      if (justArticulated) {
-        document.getElementById('feedback-icon').textContent = q.isGoodTitle ? '\u2713' : '\u2717';
-        verdictEl.textContent = q.isGoodTitle ? 'Good Title' : 'Bad Title';
-        verdictEl.style.color = q.isGoodTitle ? '#008440' : '#C44040';
-      } else {
-        document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
-        verdictEl.textContent = correct ? 'Correct!' : 'Wrong!';
-        verdictEl.style.color = correct ? '#008440' : '#C44040';
-      }
       document.getElementById('feedback-category').textContent = getCategoryName(q.category, q.isGoodTitle);
 
       // Populate secondary category pills
