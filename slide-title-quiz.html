@@ -190,6 +190,22 @@
       letter-spacing: 0;
     }
 
+    /* Title verdict icon */
+    .title-verdict-icon {
+      display: none;
+      margin-top: 16px;
+      font-size: 1.5rem;
+      opacity: 0;
+      transform: scale(0.3);
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+
+    .title-verdict-icon.visible {
+      display: block;
+      opacity: 1;
+      transform: scale(1);
+    }
+
     /* Correct flash animation */
     @keyframes correct-flash {
       0%   { background-color: #FFFFFF; }
@@ -930,6 +946,7 @@
       <p id="progress-text" class="progress-text">1 / 20</p>
       <div class="question-card">
         <p id="sentence" class="sentence"></p>
+        <span id="title-verdict-icon" class="title-verdict-icon"></span>
       </div>
       <div class="buttons">
         <div class="btn-wrap">
@@ -1975,11 +1992,12 @@
       card.style.opacity = '0';
       card.style.transform = 'translateY(8px)';
 
-      // Hide articulation prompt
+      // Hide articulation prompt and verdict icon
       const artPrompt = document.getElementById('articulation-prompt');
       artPrompt.classList.remove('visible');
       artPrompt.style.display = 'none';
       document.getElementById('articulation-textarea').value = '';
+      document.getElementById('title-verdict-icon').classList.remove('visible');
 
       setTimeout(() => {
         if (q.html) {
@@ -2021,6 +2039,16 @@
 
       const btn = userSaidGood ? document.getElementById('good-btn') : document.getElementById('bad-btn');
       btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+
+      // Show verdict icon on the title card
+      const verdictIcon = document.getElementById('title-verdict-icon');
+      verdictIcon.textContent = q.isGoodTitle ? '✅' : '❌';
+      verdictIcon.classList.remove('visible');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          verdictIcon.classList.add('visible');
+        });
+      });
 
       // Bad title? Ask for articulation (max 3 per round, not consecutive, not same category)
       if (!userSaidGood &&
