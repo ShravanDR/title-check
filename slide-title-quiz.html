@@ -2010,10 +2010,10 @@
       currentIndex = 0;
       answers = [];
       articulations = {};
+      saveArticulations();
       articulationCount = 0;
       lastArticulationIndex = -99;
       articulatedCategories = new Set();
-      loadArticulations();
       showScreen('question');
       showQuestion();
     }
