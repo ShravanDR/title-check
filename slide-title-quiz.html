@@ -2095,8 +2095,13 @@
         yourTake.classList.add('hidden');
       }
 
+      const hasArticulation = lastArticulation && lastArticulation.text;
       document.getElementById('feedback-icon').textContent = correct ? '\u2713' : '\u2717';
-      document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
+      if (hasArticulation) {
+        document.getElementById('feedback-verdict').textContent = q.isGoodTitle ? 'Good Title' : 'Bad Title';
+      } else {
+        document.getElementById('feedback-verdict').textContent = correct ? 'Correct!' : 'Wrong!';
+      }
       document.getElementById('feedback-category').textContent = getCategoryName(q.category, q.isGoodTitle);
 
       // Populate secondary category pills
