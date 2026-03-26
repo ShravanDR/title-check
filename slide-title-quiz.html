@@ -192,18 +192,26 @@
 
     /* Title verdict icon */
     .title-verdict-icon {
-      display: none;
+      display: block;
       margin-top: 16px;
       font-size: 1.5rem;
+      height: 0;
+      overflow: hidden;
       opacity: 0;
       transform: scale(0.3);
-      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
     }
 
     .title-verdict-icon.visible {
-      display: block;
+      height: auto;
       opacity: 1;
       transform: scale(1);
+      animation: verdict-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+    }
+
+    @keyframes verdict-pop {
+      0%   { opacity: 0; transform: scale(0.3); }
+      60%  { opacity: 1; transform: scale(1.15); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     /* Correct flash animation */
