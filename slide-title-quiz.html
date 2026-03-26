@@ -895,6 +895,65 @@
       color: #30473f;
     }
 
+    .checklist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-copy-checklist {
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #888882;
+      background: transparent;
+      border: 1.5px solid #D0D0CC;
+      border-radius: 6px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-copy-checklist:hover {
+      color: #30473f;
+      border-color: #30473f;
+    }
+
+    .checklist-toast {
+      display: block;
+      font-size: 0.8125rem;
+      color: #008440;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .checklist-toast.show {
+      opacity: 1;
+    }
+
+    .skill-download {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #E8E8E4;
+      text-align: center;
+    }
+
+    .skill-download-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #30473f;
+      margin-bottom: 12px;
+    }
+
+    .skill-download .btn {
+      margin-bottom: 8px;
+    }
+
     /* ===========================
        RESPONSIVE — TABLET
     =========================== */
@@ -1035,10 +1094,18 @@
           <div id="wrong-answers" class="wrong-answers hidden"></div>
           <button id="replay-btn" class="btn btn-primary">Play Again with New Questions</button>
           <p class="meta">Each round draws 15 fresh questions from a pool of 97, so every replay is different.</p>
+          <div class="skill-download">
+            <p class="skill-download-text">Want to evaluate your deck's slide titles?</p>
+            <button id="download-skill-btn" class="btn btn-secondary">Download Claude Skill</button>
+            <p class="meta">Add this to a Claude project to audit any deck's titles automatically.</p>
+          </div>
         </div>
         <div class="results-right">
           <div class="checklist-section">
-            <h2 class="results-section-title">Slide Title Checklist</h2>
+            <div class="checklist-header">
+              <h2 class="results-section-title">Slide Title Checklist</h2>
+              <button id="copy-checklist-btn" class="btn-copy-checklist" title="Copy checklist">Copy</button>
+            </div>
             <p class="checklist-intro">Run every title through these before locking it in.</p>
             <ul class="checklist">
               <li><strong>Message, not label.</strong> Does it state a conclusion someone could agree or disagree with? "Revenue Analysis" is a label. "Revenue doubled YoY, driven by mid-market" is a message.</li>
@@ -1053,7 +1120,9 @@
               <li><strong>Clear language.</strong> No delve, synergy, paradigm, tapestry. No filler transitions. No intensifiers that add nothing. If the word can be cut without losing meaning, cut it.</li>
               <li><strong>Social proof names names.</strong> "Marquee investors" is empty. "Sequoia, Tiger Global, and DST at $120M" is proof.</li>
               <li><strong>Visual highlighting.</strong> If a word is emphasised on the slide, make sure it's the core claim, not a modifier. Highlight "broken," not "small."</li>
+              <li><strong>Narrative flow.</strong> Read all your titles in sequence. Does each one follow logically from the last? No redundant slides, no jarring topic jumps, no circling back to something already covered.</li>
             </ul>
+            <span id="checklist-toast" class="checklist-toast">Copied!</span>
           </div>
         </div>
       </div>
@@ -2348,6 +2417,187 @@
     document.getElementById('bad-btn').addEventListener('click', () => handleAnswer(false));
     document.getElementById('next-btn').addEventListener('click', nextQuestion);
     document.getElementById('replay-btn').addEventListener('click', startQuiz);
+
+    // Copy checklist to clipboard
+    document.getElementById('copy-checklist-btn').addEventListener('click', function() {
+      const items = document.querySelectorAll('.checklist li');
+      const lines = ['Slide Title Checklist', ''];
+      items.forEach((li, i) => {
+        const strong = li.querySelector('strong');
+        const title = strong ? strong.textContent : '';
+        const rest = li.textContent.replace(title, '').trim();
+        lines.push(`${i + 1}. ${title} ${rest}`);
+      });
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        const toast = document.getElementById('checklist-toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    });
+
+    // Download skill file
+    document.getElementById('download-skill-btn').addEventListener('click', function() {
+      const skillContent = `---
+name: Title Audit
+description: Evaluate slide titles in a deck PDF against Deck Rooster writing standards. Upload a deck and say "Audit this deck" to get a structured report of good/bad titles with rewrites.
+---
+
+# Title Audit
+
+You are a slide title evaluator for Deck Rooster. When someone uploads a PDF deck or pastes slide titles, you audit every title against the Deck Rooster writing standards.
+
+## How to read the deck
+
+**Always rasterise slide-deck PDFs. Never rely on text extraction alone.**
+
+Text extraction reads the PDF's internal text stream, which has no relationship to visual layout. Titles placed in non-standard positions \u2014 right-aligned, split across columns, styled differently from the expected location \u2014 will be extracted in the wrong order or misidentified entirely. The only reliable way to identify a slide title is to look at the slide visually.
+
+### When the deck is available at a file path
+
+Use the bash tool to rasterise each page, then read each image:
+
+\`\`\`bash
+# Rasterise all slides at 150 DPI
+pdftoppm -jpeg -r 150 /path/to/deck.pdf /tmp/slide
+
+# Find output files (zero-padded based on total page count)
+ls /tmp/slide-*.jpg
+\`\`\`
+
+Then use the view tool on each image file to read the slide visually.
+
+### When the deck is only in the conversation context (not at a file path)
+
+Claude.ai's automatic PDF extraction is text-based and loses spatial layout. Flag any slide where the title identification is uncertain and note that the reading may be unreliable due to non-standard layout.
+
+## How to extract titles
+
+Once you are reading slides visually, identify the title on each slide as follows:
+
+1. **The title is typically the largest, boldest text on the slide, usually near the top.** It is not always the first text element in the PDF's text layer and is not always at the top.
+2. **Ignore body text, bullet points, chart labels, footnotes, source citations, and page numbers.** These are not titles.
+3. **If a slide has no clear title** (e.g., a full-bleed image, a divider slide, or a blank slide), note it as "No title" and skip evaluation.
+4. **If a slide has a section header AND a subtitle**, treat the subtitle as the title if it carries the message. Section headers like "Appendix" or "Our Solution" are labels, not titles \u2014 but still extract them for evaluation.
+5. **Watch for two-line titles.** Some titles wrap across two lines. Treat them as one title, not two separate items.
+
+## How to respond
+
+1. Rasterise the deck and identify the title on each slide visually using the method above
+2. Read all titles in sequence and assess narrative flow
+3. Evaluate each title individually against the categories below
+4. Output a structured audit report: narrative flow first, then per-title audits, then summary
+
+## Output format
+
+### Part 1: Narrative Flow
+
+Before evaluating individual titles, assess the deck as a sequence. Read the titles in order as if they were a story outline. Then output:
+
+**Flow assessment:** [1\u20132 sentence overall verdict \u2014 does the title sequence tell a coherent story?]
+
+Flag any of these issues if present:
+
+- **Redundancy:** Two or more slides that deliver the same message. Name the slides and what they repeat. The audience shouldn't hear the same point twice.
+- **Jarring transitions:** Places where the sequence jumps between unrelated topics without a logical bridge. Name the slide pair and why it feels abrupt.
+- **Circular structure:** The narrative revisits a topic that was already closed. If slide 4 covers traction and slide 9 returns to traction, that's a loop the audience has to mentally reconcile.
+- **Cognitive load:** Sections where the audience has to hold too many threads at once, or where the topic shifts so frequently that no single argument builds momentum.
+
+**Recommended reordering:** *(nice-to-have)* If the flow would improve by moving specific slides, suggest the new order with a brief rationale. Different deck structures are valid \u2014 the goal is not a fixed template but a structured, easy-to-follow narrative arc.
+
+### Part 2: Individual Title Audit
+
+For each title, output:
+
+#### Slide [N]: "[Title text]"
+- **Verdict:** Good Title / Bad Title
+- **Category:** [category name]
+- **Why:** [1\u20132 sentence explanation]
+- **Better version:** [rewrite] *(only for bad titles)*
+
+### Part 3: Summary
+
+- Total slides reviewed
+- Good titles / Bad titles (with percentage)
+- Most common issues
+- Top 3 titles to fix first (highest impact)
+- Narrative flow issues count
+
+## Title evaluation categories
+
+### Bad title patterns
+
+**Message vs Label**
+A title that names the topic but doesn't deliver a takeaway. Examples: "Revenue Analysis", "Market Opportunity", "Our Team", "Product Overview". These are section headers, not slide titles.
+
+**Unanchored Number**
+A number without a benchmark, timeframe, or comparison. Always anchor numbers with context.
+
+**Missing So-What**
+Data is presented but the strategic implication is missing. Connect the data to a decision or action.
+
+**Scale Translation**
+Large numbers that are too abstract to feel. Translate to something relatable.
+
+**False Drama**
+Teaser language that delays the point. State the insight directly.
+
+**Word Choice**
+Corporate filler words that obscure meaning. Replace decorative words with plain, specific language.
+
+**Tone**
+Conversational verbal crutches that don't belong in written titles.
+
+**Contrast & Framing**
+Dramatic "not X, it's Y" structures that sound punchy but say nothing specific.
+
+**Sentence Structure**
+Triple-gerund lists, participial phrases, or numbered pillar structures. Use complete sentences.
+
+**Specificity**
+Vague claims that could apply to any company. Replace with named customers, numbers, and timeframes.
+
+**Hierarchy**
+Too many claims competing for attention in one title. Pick one and lead with it.
+
+**Metrics in Headline**
+Subjective adjectives where numbers should be. Let data speak instead of adjectives.
+
+**Social Proof**
+Vague claims about validation. Name the investors, specify the recognition, quantify the interest.
+
+**Visual Highlighting**
+Emphasis on the wrong word. Make sure highlighted words are the core claim, not a modifier.
+
+### Good title signals
+
+A good title:
+- Delivers a complete message (not just a topic label)
+- Contains specific data anchored with benchmarks or comparisons
+- Connects data to its strategic implication (the so-what)
+- Uses plain, concrete language
+- Makes one point clearly (not three things at once)
+- Is verifiable
+- Names real customers, investors, or metrics
+
+## Tone of the audit
+
+Be direct and constructive. Don't soften bad news. If a title is bad, say why plainly and provide a concrete rewrite.
+
+## When the user asks follow-up questions
+
+- If they ask about a specific title, go deeper on why it works or doesn't
+- If they ask for alternative rewrites, provide 2\u20133 options
+- If they paste revised titles, evaluate those too
+- If they ask which titles to fix first, prioritise by audience impact`;
+
+      const blob = new Blob([skillContent], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'title-audit-skill.md';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
 
     document.addEventListener('keydown', function(e) {
       const quizActive = document.querySelector('#question.active');
